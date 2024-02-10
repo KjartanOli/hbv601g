@@ -1,0 +1,88 @@
+@startuml
+class Location <<(E, red) Entity>> {
+    - id: Long
+    - name: String
+    - description: String
+    - location: GPSPosition
+    - category: LocationCategory
+    - monthlyVisits: List<VisitStatistic>
+}
+
+note left of Location::location
+  GPSPosition is an alias for android.location.Location
+end note
+
+class VisitStatistic <<(E, red) Entity>> {
+    - time: YearMonth
+    - visitors: int
+}
+
+enum LocationCategory {
+    PEARL
+    TRAP
+}
+
+Location "1" -> "+" VisitStatistic
+Location "1" -> "1" LocationCategory
+
+note as Composables
+Composables are not true classes, they are free standing functions,
+but they fulfill the role previously filled by Fragments
+(which are classes), and UML seems fundamentaly incapable of
+modeling a design not rooted in Object Oriented Design.
+As such, Composables are here represented as "Classes",
+with their argumenst represented by that class's "Members".
+end note
+
+class AppNavHost <<(C, orange) Composable>> {
+    navController: NavHostController
+}
+
+class LocationList <<(C, orange) Composable>> {
+    heading: String
+    locations: List<Location>
+    onNavigatoToDetails: (id: Long) -> Unit
+}
+
+class LocationCard <<(C, orange) Composable>> {
+    location: Location
+    onNavigatoToDetails: (id: Long) -> Unit
+}
+
+class LocationDetails <<(C, orange) Composable>> {
+    location: Location
+}
+
+class SearchDialog <<(C, orange) Composable>>
+
+class HomeView <<(C, orange) Composable>> {
+    pearls: List<Location>
+    traps: List<Location>
+    onNavigateToList: () -> Unit
+    onNavigatoToDetails: (id: Long) -> Unit
+}
+
+class MainActivity <<(A, yellow) Activity>>
+
+MainActivity ..> AppNavHost : uses
+AppNavHost ..> HomeView : uses
+AppNavHost ..> LocationList : uses
+AppNavHost ..> LocationDetails : uses
+AppNavHost ..> SearchDialog : uses
+AppNavHost --> LocationService
+
+LocationList ..> LocationCard : uses
+
+class NetworkingService <<(S, lightgreen) Service>> {
+    - baseURL: URL
+    + getRequest(endpoint: String): JSONObject
+}
+class LocationService <<(S, lightgreen) Service>> {
+    - networking: NetworkingService
+    + getLocations(): List<Location>
+    + searchByCategory(category: LocationCategory): List<Location>
+    + searchByTitle(title: String): List<Location>
+    + searchByPosition(position: GPSPosition, radius: int): List<Location>
+}
+LocationService -> NetworkingService
+@enduml

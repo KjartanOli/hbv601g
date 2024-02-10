@@ -1,0 +1,49 @@
+@startuml
+autoactivate on
+actor User
+create MainActivity
+User -> MainActivity: Start App
+
+create NavHostController
+MainActivity -> NavHostController
+return navController
+
+create AppNavHost
+MainActivity -> AppNavHost: AppNavHost(navController)
+
+AppNavHost -> NavHostController: navigate(Screen.Home)
+NavHostController -> LocationService: searchByCategory(LocationCategory.PEARL, 5)
+LocationService -> NetworkingService: getRequest("/api/locations?category=1&limit=5")
+note right
+Category numbers are subject to change
+end note
+
+return JSON Object
+return List<Location>
+NavHostController -> LocationService: searchByCategory(LocationCategory.TRAP, 5)
+LocationService -> NetworkingService: getRequest("/api/locations?category=2&limit=5")
+return JSON Object
+return List<Location>
+
+NavHostController -> AppNavHost
+create HomeView
+AppNavHost -> HomeView: HomeView(pearls, traps)
+
+create LocationList
+HomeView -> LocationList: LocationList(heading="Pearls", pearls)
+create LocationCard
+LocationList -> LocationCard
+return
+return
+
+HomeView -> LocationList: LocationList(heading="Traps", traps)
+LocationList -> LocationCard
+return
+return
+
+return
+return
+return
+return
+return Display home screen
+@enduml
