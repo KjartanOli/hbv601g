@@ -1,6 +1,7 @@
 package com.main.hiddenpearls.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
@@ -15,7 +16,8 @@ fun HomeView(
 	pearls: List<Location>,
 	traps: List<Location>,
 	onNavigateToList: () -> Unit,
-	onNavigateToDetails: (id: Long) -> Unit
+	onNavigateToDetails: (id: Long) -> Unit,
+	modifier: Modifier = Modifier
 ) {
 	Column {
 		LocationList(
@@ -35,7 +37,8 @@ fun HomeView(
 fun LocationList(
 	heading: String,
 	locations: List<Location>,
-	onNavigateToDetails: (id: Long) -> Unit
+	onNavigateToDetails: (id: Long) -> Unit,
+	modifier: Modifier = Modifier
 ) {
 	Column {
 		Text(text = heading)

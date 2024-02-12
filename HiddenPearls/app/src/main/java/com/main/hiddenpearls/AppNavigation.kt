@@ -8,26 +8,44 @@ import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.LocationOn
 
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.LocationList
 import com.main.hiddenpearls.ui.LocationCard
 import com.main.hiddenpearls.ui.LocationDetails
 
-enum class Screen {
-    HOME, LOCATION_LIST, LOCATION_DETAILS
+/* enum class Screen { */
+/*     HOME, LOCATION_LIST, LOCATION_DETAILS */
+/* } */
+
+sealed class Screen(val route: String) {
+	object Home : Screen("home")
+	object LocationList : Screen("location_list")
+	object LocationDetails : Screen("location")
+	object NameSearch : Screen("search/name")
+	object GPSSearch : Screen("search/gps")
 }
 
 @Composable
 fun AppNavHost(
 	modifier: Modifier = Modifier,
 	navController: NavHostController,
-	startDestination: String = Screen.HOME.name
+	startDestination: String = Screen.Home.route
 ) {
 	val locations = LocationService()
 
 	val onNavigateToDetails = {
-		id: Long ->  navController.navigate("${Screen.LOCATION_DETAILS.name}/$id")
+		id: Long ->  navController.navigate("${Screen.LocationDetails.route}/$id")
 	}
 
 	NavHost(
@@ -35,25 +53,35 @@ fun AppNavHost(
 		navController = navController,
 		startDestination = startDestination
 	) {
-		composable(Screen.HOME.name) {
+		composable(Screen.Home.route) {
 			val pearls = locations.searchByCategory(LocationCategory.PEARL, 5);
 			val traps = locations.searchByCategory(LocationCategory.TRAP, 5);
-			HomeView(
-				pearls = pearls,
-				traps = traps,
-				onNavigateToList = {
-					navController.navigate(Screen.LOCATION_LIST.name)
-				},
-				onNavigateToDetails = onNavigateToDetails
-			)
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+				HomeView(
+					pearls = pearls,
+					traps = traps,
+					modifier = modifier.padding(innerPadding),
+					onNavigateToList = {
+						navController.navigate(Screen.LocationList.route)
+					},
+					onNavigateToDetails = onNavigateToDetails
+				)
+			}
 		}
 
-		composable(Screen.LOCATION_LIST.name) {
-			LocationList(heading = "Locations", locations=locations.getLocations(), onNavigateToDetails = onNavigateToDetails)
+		composable(Screen.LocationList.route) {
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+				LocationList(
+					heading = "Locations",
+					locations=locations.getLocations(),
+					modifier = modifier.padding(innerPadding),
+					onNavigateToDetails = onNavigateToDetails
+				)
+			}
 		}
 
 		composable(
-			"${Screen.LOCATION_DETAILS.name}/{id}",
+			"${Screen.LocationDetails.route}/{id}",
 			arguments = listOf(navArgument("id") { type = NavType.LongType })
 		) { backStackEntry ->
 			val id = backStackEntry.arguments?.getLong("id")
@@ -64,4 +92,24 @@ fun AppNavHost(
 			}
 		}
 	}
+}
+
+@Composable
+fun NavBar(navController: NavHostController) {
+	BottomAppBar(
+		actions = {
+			IconButton(onClick = {navController.navigate(Screen.Home.route)}) {
+				Icon(Icons.Filled.Home, contentDescription = "Home")
+			}
+			IconButton(onClick = {navController.navigate(Screen.LocationList.route)}) {
+				Icon(Icons.Filled.List, contentDescription = "All Locations")
+			}
+			IconButton(onClick = {navController.navigate(Screen.NameSearch.route)}) {
+				Icon(Icons.Filled.Search, contentDescription = "Search")
+			}
+			IconButton(onClick = {navController.navigate(Screen.GPSSearch.route)}) {
+				Icon(Icons.Filled.LocationOn, contentDescription = "Nearby")
+			}
+		}
+	)
 }
