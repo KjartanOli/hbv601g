@@ -101,14 +101,14 @@ fun NavBar(navController: NavHostController) {
 			IconButton(onClick = {navController.navigate(Screen.Home.route)}) {
 				Icon(Icons.Filled.Home, contentDescription = "Home")
 			}
-			IconButton(onClick = {navController.navigate(Screen.LocationList.route)}) {
-				Icon(Icons.Filled.List, contentDescription = "All Locations")
-			}
 			IconButton(onClick = {navController.navigate(Screen.NameSearch.route)}) {
 				Icon(Icons.Filled.Search, contentDescription = "Search")
 			}
 			IconButton(onClick = {navController.navigate(Screen.GPSSearch.route)}) {
 				Icon(Icons.Filled.LocationOn, contentDescription = "Nearby")
+			}
+			IconButton(onClick = {navController.navigate(Screen.LocationList.route)}) {
+				Icon(Icons.Filled.List, contentDescription = "All Locations")
 			}
 		}
 	)
