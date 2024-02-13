@@ -18,6 +18,14 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.LocationList
@@ -96,12 +104,14 @@ fun AppNavHost(
 
 @Composable
 fun NavBar(navController: NavHostController) {
+	val showDialog = remember { mutableStateOf(false) }
+
 	BottomAppBar(
 		actions = {
 			IconButton(onClick = {navController.navigate(Screen.Home.route)}) {
 				Icon(Icons.Filled.Home, contentDescription = "Home")
 			}
-			IconButton(onClick = {navController.navigate(Screen.NameSearch.route)}) {
+			IconButton(onClick = {showDialog.value = true}) {
 				Icon(Icons.Filled.Search, contentDescription = "Search")
 			}
 			IconButton(onClick = {navController.navigate(Screen.GPSSearch.route)}) {
@@ -112,4 +122,36 @@ fun NavBar(navController: NavHostController) {
 			}
 		}
 	)
+
+	//
+
+
+	if (showDialog.value) {
+		AlertDialog(
+			onDismissRequest = { showDialog.value = false },
+			title = { Text("Search") },
+			text = {
+					// State for the text field
+					var text by remember { mutableStateOf("") }
+
+					TextField(
+						value = text,
+						onValueChange = { text = it },
+						label = { Text("Search for a pearl or trap...") }
+					)
+				   },
+			dismissButton = {
+				Button(onClick = { showDialog.value = false }) {
+					Text("Cancel")
+				}
+							},
+			confirmButton = {
+				Button(onClick = { showDialog.value = false
+				// use search results here, in 'text'
+					}) {
+					Text("Search")
+				}
+			}
+		)
+	}
 }
