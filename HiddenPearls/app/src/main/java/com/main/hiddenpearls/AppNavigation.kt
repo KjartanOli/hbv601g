@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
-import androidx.navigation.NavArgument
 import androidx.navigation.navArgument
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -31,14 +30,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.LocationList
-import com.main.hiddenpearls.ui.LocationCard
 import com.main.hiddenpearls.ui.LocationDetails
 
 /* enum class Screen { */
@@ -71,8 +68,8 @@ fun AppNavHost(
 		startDestination = startDestination
 	) {
 		composable(Screen.Home.route) {
-			val pearls = locations.searchByCategory(LocationCategory.PEARL, 5);
-			val traps = locations.searchByCategory(LocationCategory.TRAP, 5);
+			val pearls = locations.searchByCategory(LocationCategory.PEARL, 5)
+			val traps = locations.searchByCategory(LocationCategory.TRAP, 5)
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				HomeView(
 					pearls = pearls,
@@ -113,7 +110,7 @@ fun AppNavHost(
 
 @Composable
 fun NavBar(navController: NavHostController) {
-	val showDialog = remember { mutableStateOf(false) }
+	val showTextSearchDialog = remember { mutableStateOf(false) }
 
 	BottomAppBar(
 		actions = {
@@ -133,9 +130,10 @@ fun NavBar(navController: NavHostController) {
 						contentDescription = "Home",
 						modifier = Modifier
 							.fillMaxSize()
+							.padding(5.dp)
 					)
 				}
-				IconButton(onClick = { showDialog.value = true },
+				IconButton(onClick = { showTextSearchDialog.value = true },
 					modifier = Modifier
 					.fillMaxSize()
 					.weight(1f)) {
@@ -143,6 +141,7 @@ fun NavBar(navController: NavHostController) {
 						contentDescription = "Search",
 						modifier = Modifier
 							.fillMaxSize()
+							.padding(5.dp)
 					)
 				}
 				IconButton(onClick = { navController.navigate(Screen.GPSSearch.route) },
@@ -153,6 +152,7 @@ fun NavBar(navController: NavHostController) {
 						contentDescription = "Nearby",
 						modifier = Modifier
 							.fillMaxSize()
+							.padding(5.dp)
 					)
 				}
 				IconButton(onClick = { navController.navigate(Screen.LocationList.route) },
@@ -163,15 +163,16 @@ fun NavBar(navController: NavHostController) {
 						contentDescription = "All Locations",
 						modifier = Modifier
 							.fillMaxSize()
+							.padding(5.dp)
 					)
 				}
 			}
 		}
 	)
 
-	if (showDialog.value) {
+	if (showTextSearchDialog.value) {
 		AlertDialog(
-			onDismissRequest = { showDialog.value = false },
+			onDismissRequest = { showTextSearchDialog.value = false },
 			title = { Text("Search") },
 			text = {
 					// State for the text field
@@ -184,12 +185,12 @@ fun NavBar(navController: NavHostController) {
 					)
 				   },
 			dismissButton = {
-				Button(onClick = { showDialog.value = false }) {
+				Button(onClick = { showTextSearchDialog.value = false }) {
 					Text("Cancel")
 				}
 							},
 			confirmButton = {
-				Button(onClick = { showDialog.value = false
+				Button(onClick = { showTextSearchDialog.value = false
 				// use search results here, in 'text'
 					}) {
 					Text("Search")
@@ -199,7 +200,7 @@ fun NavBar(navController: NavHostController) {
 	}
 }
 
-
+// previews below
 @Preview
 @Composable
 fun NavBarPreview() {
