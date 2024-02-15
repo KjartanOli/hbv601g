@@ -1,5 +1,10 @@
 package com.main.hiddenpearls
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
@@ -26,6 +31,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.LocationList
@@ -108,23 +117,57 @@ fun NavBar(navController: NavHostController) {
 
 	BottomAppBar(
 		actions = {
-			IconButton(onClick = {navController.navigate(Screen.Home.route)}) {
-				Icon(Icons.Filled.Home, contentDescription = "Home")
-			}
-			IconButton(onClick = {showDialog.value = true}) {
-				Icon(Icons.Filled.Search, contentDescription = "Search")
-			}
-			IconButton(onClick = {navController.navigate(Screen.GPSSearch.route)}) {
-				Icon(Icons.Filled.LocationOn, contentDescription = "Nearby")
-			}
-			IconButton(onClick = {navController.navigate(Screen.LocationList.route)}) {
-				Icon(Icons.Filled.List, contentDescription = "All Locations")
+			Row(
+				modifier = Modifier
+					.fillMaxHeight()
+					.fillMaxWidth()
+					.padding(8.dp),
+				horizontalArrangement = Arrangement.Center
+			) {
+				IconButton(onClick = { navController.navigate(Screen.Home.route) },
+					modifier = Modifier
+					.fillMaxSize()
+					.weight(1f)) {
+					Icon(
+						Icons.Filled.Home,
+						contentDescription = "Home",
+						modifier = Modifier
+							.fillMaxSize()
+					)
+				}
+				IconButton(onClick = { showDialog.value = true },
+					modifier = Modifier
+					.fillMaxSize()
+					.weight(1f)) {
+					Icon(Icons.Filled.Search,
+						contentDescription = "Search",
+						modifier = Modifier
+							.fillMaxSize()
+					)
+				}
+				IconButton(onClick = { navController.navigate(Screen.GPSSearch.route) },
+					modifier = Modifier
+					.fillMaxSize()
+					.weight(1f)) {
+					Icon(Icons.Filled.LocationOn,
+						contentDescription = "Nearby",
+						modifier = Modifier
+							.fillMaxSize()
+					)
+				}
+				IconButton(onClick = { navController.navigate(Screen.LocationList.route) },
+					modifier = Modifier
+						.fillMaxSize()
+						.weight(1f)) {
+					Icon(Icons.Filled.List,
+						contentDescription = "All Locations",
+						modifier = Modifier
+							.fillMaxSize()
+					)
+				}
 			}
 		}
 	)
-
-	//
-
 
 	if (showDialog.value) {
 		AlertDialog(
@@ -154,4 +197,11 @@ fun NavBar(navController: NavHostController) {
 			}
 		)
 	}
+}
+
+
+@Preview
+@Composable
+fun NavBarPreview() {
+	NavBar(rememberNavController())
 }
