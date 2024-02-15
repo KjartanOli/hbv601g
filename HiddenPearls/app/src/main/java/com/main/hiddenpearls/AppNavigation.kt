@@ -24,9 +24,11 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -110,7 +112,8 @@ fun AppNavHost(
 
 @Composable
 fun NavBar(navController: NavHostController) {
-	val showTextSearchDialog = remember { mutableStateOf(false) }
+	val showNameSearchDialog = remember { mutableStateOf(false) }
+	val showGPSSearchDialog = remember { mutableStateOf(false) }
 
 	BottomAppBar(
 		actions = {
@@ -123,8 +126,8 @@ fun NavBar(navController: NavHostController) {
 			) {
 				IconButton(onClick = { navController.navigate(Screen.Home.route) },
 					modifier = Modifier
-					.fillMaxSize()
-					.weight(1f)) {
+						.fillMaxSize()
+						.weight(1f)) {
 					Icon(
 						Icons.Filled.Home,
 						contentDescription = "Home",
@@ -133,10 +136,10 @@ fun NavBar(navController: NavHostController) {
 							.padding(5.dp)
 					)
 				}
-				IconButton(onClick = { showTextSearchDialog.value = true },
+				IconButton(onClick = { showNameSearchDialog.value = true },
 					modifier = Modifier
-					.fillMaxSize()
-					.weight(1f)) {
+						.fillMaxSize()
+						.weight(1f)) {
 					Icon(Icons.Filled.Search,
 						contentDescription = "Search",
 						modifier = Modifier
@@ -144,10 +147,10 @@ fun NavBar(navController: NavHostController) {
 							.padding(5.dp)
 					)
 				}
-				IconButton(onClick = { navController.navigate(Screen.GPSSearch.route) },
+				IconButton(onClick = { showGPSSearchDialog.value = true },
 					modifier = Modifier
-					.fillMaxSize()
-					.weight(1f)) {
+						.fillMaxSize()
+						.weight(1f)) {
 					Icon(Icons.Filled.LocationOn,
 						contentDescription = "Nearby",
 						modifier = Modifier
@@ -170,9 +173,9 @@ fun NavBar(navController: NavHostController) {
 		}
 	)
 
-	if (showTextSearchDialog.value) {
+	if (showNameSearchDialog.value) {
 		AlertDialog(
-			onDismissRequest = { showTextSearchDialog.value = false },
+			onDismissRequest = { showNameSearchDialog.value = false },
 			title = { Text("Search") },
 			text = {
 					// State for the text field
@@ -185,14 +188,42 @@ fun NavBar(navController: NavHostController) {
 					)
 				   },
 			dismissButton = {
-				Button(onClick = { showTextSearchDialog.value = false }) {
+				Button(onClick = { showNameSearchDialog.value = false }) {
 					Text("Cancel")
 				}
 							},
 			confirmButton = {
-				Button(onClick = { showTextSearchDialog.value = false
+				Button(onClick = { showNameSearchDialog.value = false
 				// use search results here, in 'text'
 					}) {
+					Text("Search")
+				}
+			}
+		)
+	}
+
+	if (showGPSSearchDialog.value) {
+		AlertDialog(
+			onDismissRequest = { showGPSSearchDialog.value = false },
+			title = { Text("Radius Search") },
+			text = {
+				// State for the text field
+				var dist by remember { mutableFloatStateOf(0f) }
+
+				Text(text = "Search radius: ${dist.toInt()} km")
+				Slider(value = dist,
+					onValueChange = { dist = it },
+					valueRange = 0f..100f)
+			},
+			dismissButton = {
+				Button(onClick = { showGPSSearchDialog.value = false }) {
+					Text("Cancel")
+				}
+			},
+			confirmButton = {
+				Button(onClick = { showGPSSearchDialog.value = false
+					// use search results here, in 'dist'
+				}) {
 					Text("Search")
 				}
 			}
