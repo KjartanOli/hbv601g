@@ -1,6 +1,7 @@
 package com.main.hiddenpearls
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -210,10 +211,16 @@ fun NavBar(navController: NavHostController) {
 				// State for the text field
 				var dist by remember { mutableFloatStateOf(0f) }
 
-				Text(text = "Search radius: ${dist.toInt()} km")
-				Slider(value = dist,
-					onValueChange = { dist = it },
-					valueRange = 0f..100f)
+				Column {
+					Text(text = "Search radius: ${dist.toInt()} km",
+						modifier = Modifier
+						.padding(5.dp))
+					Slider(
+						value = dist,
+						onValueChange = { dist = it },
+						valueRange = 0f..100f
+					)
+				}
 			},
 			dismissButton = {
 				Button(onClick = { showGPSSearchDialog.value = false }) {
