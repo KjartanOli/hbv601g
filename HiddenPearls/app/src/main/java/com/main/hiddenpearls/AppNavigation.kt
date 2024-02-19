@@ -117,7 +117,10 @@ fun AppNavHost(
 
 			if (id != null) {
 				val location = locations.searchById(id)
-				LocationDetails(location = location)
+				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+					LocationDetails(location = location
+					)
+				}
 			}
 		}
 	}
