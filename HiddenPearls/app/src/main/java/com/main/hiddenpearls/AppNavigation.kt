@@ -1,5 +1,10 @@
 package com.main.hiddenpearls
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,11 +33,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
@@ -40,6 +47,8 @@ import androidx.navigation.compose.rememberNavController
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.LocationList
 import com.main.hiddenpearls.ui.LocationDetails
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /* enum class Screen { */
 /*     HOME, LOCATION_LIST, LOCATION_DETAILS */
@@ -81,9 +90,12 @@ fun AppNavHost(
 					onNavigateToList = {
 						navController.navigate(Screen.LocationList.route)
 					},
-					onNavigateToDetails = onNavigateToDetails
+					onNavigateToDetails = onNavigateToDetails,
+					navController = navController,
+					locations = locations
 				)
 			}
+
 		}
 
 		composable(Screen.LocationList.route) {
@@ -237,6 +249,51 @@ fun NavBar(navController: NavHostController) {
 		)
 	}
 }
+
+// Gives you a random pearl when you shake the phone on the home screen of the app
+@Composable
+fun ShakeForPearl(navController: NavHostController, locations: LocationService) {
+	val context = LocalContext.current
+	val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+	val gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+
+	val sensorEventListener = remember {
+		object : SensorEventListener {
+			override fun onSensorChanged(event: SensorEvent?) {
+				val gyroChange = sqrt(
+					event?.values?.get(0)?.pow(2) ?: (0f
+						+ (event?.values?.get(1)?.pow(2) ?: 0f)
+						+ (event?.values?.get(2)?.pow(2) ?: 0f))
+				)
+
+				val threshold = 2.0f
+				// Get a random location
+				// might offload picking random location to api
+				if (gyroChange > threshold) {
+					navController.navigate("${Screen.LocationDetails.route}/${locations.searchByCategory(LocationCategory.PEARL).random().id}")
+				}
+
+			}
+
+			override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+				// Handle changes in sensor accuracy if needed
+			}
+		}
+	}
+
+	DisposableEffect(Unit) {
+		sensorManager.registerListener(sensorEventListener, gyroscopeSensor, SensorManager.SENSOR_DELAY_NORMAL)
+
+		// Unregister the listener when the composable is disposed
+		onDispose {
+			sensorManager.unregisterListener(sensorEventListener)
+		}
+	}
+}
+
+
+
+
 
 // previews below
 @Preview

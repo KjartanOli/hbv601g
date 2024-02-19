@@ -8,8 +8,13 @@ import androidx.compose.material3.Button
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Column
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 
 import com.main.hiddenpearls.Location
+import com.main.hiddenpearls.LocationCategory
+import com.main.hiddenpearls.LocationService
+import com.main.hiddenpearls.ShakeForPearl
 
 @Composable
 fun HomeView(
@@ -17,8 +22,12 @@ fun HomeView(
 	traps: List<Location>,
 	onNavigateToList: () -> Unit,
 	onNavigateToDetails: (id: Long) -> Unit,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	navController: NavHostController,
+	locations: LocationService
 ) {
+	ShakeForPearl(navController, locations)
+
 	Column {
 		LocationList(
 			heading = "Pearls",
