@@ -80,7 +80,21 @@ data class Location (
 
 class LocationService() {
 	fun getLocations(limit: Int? = null): List<Location> {
-		return listOf<Location>();
+		return listOf<Location>(Location(
+			id = 0,
+			name = "Test",
+			description = "lorem ipsum dolor",
+			category = LocationCategory.PEARL,
+			location = GPSLocation(""),
+			statistics = listOf<VisitStatistic>()
+		), Location(
+			id = 1,
+			name = "Test",
+			description = "set amet",
+			category = LocationCategory.TRAP,
+			location = GPSLocation(""),
+			statistics = listOf<VisitStatistic>()
+		));
 	}
 
 	fun searchById(id: Long): Location {
