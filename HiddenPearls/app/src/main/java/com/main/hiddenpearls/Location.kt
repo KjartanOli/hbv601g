@@ -1,16 +1,14 @@
-package com.main.hiddenpearls;
+package com.main.hiddenpearls
 
-import java.time.YearMonth;
-import java.time.Month
-import android.location.Location as GPSLocation;
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.encoding.Encoder
+import java.time.Month
+import java.time.YearMonth
+import android.location.Location as GPSLocation
 
 enum class LocationCategory {
 	PEARL, TRAP
@@ -18,12 +16,12 @@ enum class LocationCategory {
 
 @Serializable
 @SerialName("YearMonth")
-private class YearMonthSurrogate(val year: Int, val month: Month) {}
+private class YearMonthSurrogate(val year: Int, val month: Month)
 
 object YearMonthSerializer : KSerializer<YearMonth> {
 	override val descriptor: SerialDescriptor = YearMonthSurrogate.serializer().descriptor
 	override fun serialize(encoder: Encoder, value: YearMonth) {
-		val surrogate = YearMonthSurrogate(value.getYear(), value.getMonth())
+		val surrogate = YearMonthSurrogate(value.year, value.month)
 		encoder.encodeSerializableValue(YearMonthSurrogate.serializer(), surrogate)
 	}
 
@@ -38,15 +36,15 @@ object YearMonthSerializer : KSerializer<YearMonth> {
 private class GPSLocationSurrogate(
 	val longitude: Double,
 	val latitude: Double
-) {}
+)
 
 object GPSLocationSerializer : KSerializer<GPSLocation> {
 	override val descriptor: SerialDescriptor = GPSLocationSurrogate.serializer().descriptor
 
 	override fun serialize(encoder: Encoder, value: GPSLocation) {
 		val surrogate = GPSLocationSurrogate(
-			longitude = value.getLongitude(),
-			latitude = value.getLatitude()
+			longitude = value.longitude,
+			latitude = value.latitude
 		)
 		encoder.encodeSerializableValue(GPSLocationSurrogate.serializer(), surrogate)
 	}
@@ -54,8 +52,8 @@ object GPSLocationSerializer : KSerializer<GPSLocation> {
 	override fun deserialize(decoder: Decoder): GPSLocation {
 		val surrogate = decoder.decodeSerializableValue(GPSLocationSurrogate.serializer())
 		val location = GPSLocation("")
-		location.setLongitude(surrogate.longitude)
-		location.setLatitude(surrogate.latitude)
+		location.longitude = surrogate.longitude
+		location.latitude = surrogate.latitude
 		return location
 	}
 }
@@ -65,7 +63,7 @@ data class VisitStatistic (
 	@Serializable(with=YearMonthSerializer::class)
 	val time: YearMonth,
 	val visitors: Int
-){}
+)
 
 @Serializable
 data class Location (
@@ -76,9 +74,9 @@ data class Location (
 	@Serializable(with=GPSLocationSerializer::class)
 	val location: GPSLocation,
 	val statistics: List<VisitStatistic>
-) {}
+)
 
-class LocationService() {
+class LocationService {
 	fun getLocations(limit: Int? = null): List<Location> {
 		return listOf<Location>(Location(
 			id = 0,
@@ -94,7 +92,7 @@ class LocationService() {
 			category = LocationCategory.TRAP,
 			location = GPSLocation(""),
 			statistics = listOf<VisitStatistic>()
-		));
+		))
 	}
 
 	fun searchById(id: Long): Location {
