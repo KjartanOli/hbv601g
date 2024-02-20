@@ -11,42 +11,41 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import androidx.navigation.NavHostController
-import androidx.navigation.navArgument
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-
+import androidx.navigation.navArgument
 import com.main.hiddenpearls.ui.HomeView
-import com.main.hiddenpearls.ui.LocationList
 import com.main.hiddenpearls.ui.LocationDetails
+import com.main.hiddenpearls.ui.LocationList
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -55,11 +54,11 @@ import kotlin.math.sqrt
 /* } */
 
 sealed class Screen(val route: String) {
-	object Home : Screen("home")
-	object LocationList : Screen("location_list")
-	object LocationDetails : Screen("location")
-	object NameSearch : Screen("search/name")
-	object GPSSearch : Screen("search/gps")
+	data object Home : Screen("home")
+	data object LocationList : Screen("location_list")
+	data object LocationDetails : Screen("location")
+	//object NameSearch : Screen("search/name")
+	//object GPSSearch : Screen("search/gps")
 }
 
 @Composable
@@ -102,7 +101,7 @@ fun AppNavHost(
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				LocationList(
 					heading = "Locations",
-					locations=locations.getLocations(),
+					locations = locations.getLocations(),
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
@@ -117,8 +116,9 @@ fun AppNavHost(
 
 			if (id != null) {
 				val location = locations.searchById(id)
-				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
-					LocationDetails(location = location
+				Scaffold(bottomBar = { NavBar(navController) }) { _ ->
+					LocationDetails(
+						location = location
 					)
 				}
 			}
@@ -194,7 +194,7 @@ fun NavBar(navController: NavHostController) {
 			onDismissRequest = { showNameSearchDialog.value = false },
 			title = { Text("Search") },
 			text = {
-					// State for the text field
+					// variable for search entry
 					var text by remember { mutableStateOf("") }
 
 					TextField(
@@ -244,7 +244,7 @@ fun NavBar(navController: NavHostController) {
 			},
 			confirmButton = {
 				Button(onClick = { showGPSSearchDialog.value = false
-					// use search results here, in 'dist'
+					// use search results here, stored in 'dist'
 				}) {
 					Text("Search")
 				}
@@ -293,10 +293,6 @@ fun ShakeForPearl(navController: NavHostController, locations: LocationService) 
 		}
 	}
 }
-
-
-
-
 
 // previews below
 @Preview
