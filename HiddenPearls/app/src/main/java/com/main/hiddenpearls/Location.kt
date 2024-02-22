@@ -80,15 +80,15 @@ class LocationService {
 	fun getLocations(limit: Int? = null): List<Location> {
 		return listOf<Location>(Location(
 			id = 0,
-			name = "Test",
-			description = "lorem ipsum dolor",
+			name = "Hafravatn",
+			description = "Overlooked lake near the capitol area",
 			category = LocationCategory.PEARL,
 			location = GPSLocation(""),
 			statistics = listOf<VisitStatistic>()
 		), Location(
 			id = 1,
-			name = "Test",
-			description = "set amet",
+			name = "Hallgrímskirkja",
+			description = "Beautiful, but swamped",
 			category = LocationCategory.TRAP,
 			location = GPSLocation(""),
 			statistics = listOf<VisitStatistic>()
@@ -98,8 +98,8 @@ class LocationService {
 	fun searchById(id: Long): Location {
 		return Location(
 			id = id,
-			name = "Test",
-			description = "lorem ipsum dolor",
+			name = "Test Pearl",
+			description = "A beautiful place, where no one goes",
 			category = LocationCategory.PEARL,
 			location = GPSLocation(""),
 			statistics = listOf<VisitStatistic>()
@@ -111,8 +111,8 @@ class LocationService {
 				   {
 					   listOf<Location>(Location(
 						   id = 0,
-						   name = "Test",
-						   description = "lorem ipsum dolor",
+						   name = "Hafravatn",
+						   description = "Overlooked lake near the capitol area",
 						   category = LocationCategory.PEARL,
 						   location = GPSLocation(""),
 						   statistics = listOf<VisitStatistic>()
@@ -122,12 +122,23 @@ class LocationService {
 				   {
 					   listOf<Location>(Location(
 						   id = 1,
-						   name = "Test",
-						   description = "set amet",
+						   name = "Hallgrímskirkja",
+						   description = "Beautiful, but swamped",
 						   category = LocationCategory.TRAP,
 						   location = GPSLocation(""),
 						   statistics = listOf<VisitStatistic>()
 					   ))
 				   }
+	}
+
+	fun searchByName(name: String) : Location {
+		return Location(
+			id = 0,
+			name = "Hafravatn",
+			description = "Overlooked lake near the capitol area",
+			category = LocationCategory.PEARL,
+			location = GPSLocation(""),
+			statistics = listOf<VisitStatistic>()
+		)
 	}
 }
