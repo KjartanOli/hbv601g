@@ -140,6 +140,7 @@ fun NavBar(navController: NavHostController) {
 					.padding(8.dp),
 				horizontalArrangement = Arrangement.Center
 			) {
+				// Home
 				IconButton(onClick = { navController.navigate(Screen.Home.route) },
 					modifier = Modifier
 						.fillMaxSize()
@@ -152,6 +153,7 @@ fun NavBar(navController: NavHostController) {
 							.padding(5.dp)
 					)
 				}
+				// Name Search
 				IconButton(onClick = { showNameSearchDialog.value = true },
 					modifier = Modifier
 						.fillMaxSize()
@@ -163,6 +165,7 @@ fun NavBar(navController: NavHostController) {
 							.padding(5.dp)
 					)
 				}
+				// Geo Search
 				IconButton(onClick = { showGPSSearchDialog.value = true },
 					modifier = Modifier
 						.fillMaxSize()
@@ -174,6 +177,7 @@ fun NavBar(navController: NavHostController) {
 							.padding(5.dp)
 					)
 				}
+				// Location List
 				IconButton(onClick = { navController.navigate(Screen.LocationList.route) },
 					modifier = Modifier
 						.fillMaxSize()
