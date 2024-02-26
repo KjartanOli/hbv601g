@@ -76,7 +76,7 @@ data class Location (
 	val statistics: List<VisitStatistic>
 )
 
-class LocationService {
+object LocationService {
 	fun getLocations(limit: Int? = null): List<Location> {
 		return listOf<Location>(Location(
 			id = 0,

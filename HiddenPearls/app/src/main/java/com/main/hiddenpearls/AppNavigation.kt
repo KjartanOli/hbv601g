@@ -67,8 +67,6 @@ fun AppNavHost(
 	navController: NavHostController,
 	startDestination: String = Screen.Home.route
 ) {
-	val locations = LocationService()
-
 	val onNavigateToDetails = {
 		id: Long ->  navController.navigate("${Screen.LocationDetails.route}/$id")
 	}
@@ -79,8 +77,8 @@ fun AppNavHost(
 		startDestination = startDestination
 	) {
 		composable(Screen.Home.route) {
-			val pearls = locations.searchByCategory(LocationCategory.PEARL, 5)
-			val traps = locations.searchByCategory(LocationCategory.TRAP, 5)
+			val pearls = LocationService.searchByCategory(LocationCategory.PEARL, 5)
+			val traps = LocationService.searchByCategory(LocationCategory.TRAP, 5)
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				HomeView(
 					pearls = pearls,
@@ -91,7 +89,6 @@ fun AppNavHost(
 					},
 					onNavigateToDetails = onNavigateToDetails,
 					navController = navController,
-					locations = locations
 				)
 			}
 
@@ -101,7 +98,7 @@ fun AppNavHost(
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				LocationList(
 					heading = "Locations",
-					locations = locations.getLocations(),
+					locations = LocationService.getLocations(),
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
@@ -115,10 +112,11 @@ fun AppNavHost(
 			val id = backStackEntry.arguments?.getLong("id")
 
 			if (id != null) {
-				val location = locations.searchById(id)
-				Scaffold(bottomBar = { NavBar(navController) }) { _ ->
+				val location = LocationService.searchById(id)
+				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 					LocationDetails(
-						location = location
+						location = location,
+						modifier = modifier.padding(innerPadding)
 					)
 				}
 			}
@@ -259,7 +257,7 @@ fun NavBar(navController: NavHostController) {
 
 // Gives you a random pearl when you shake the phone on the home screen of the app
 @Composable
-fun ShakeForPearl(navController: NavHostController, locations: LocationService) {
+fun ShakeForPearl(navController: NavHostController) {
 	val context = LocalContext.current
 	val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 	val gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
@@ -273,11 +271,11 @@ fun ShakeForPearl(navController: NavHostController, locations: LocationService) 
 						+ (event?.values?.get(2)?.pow(2) ?: 0f))
 				)
 
-				val threshold = 2.0f
+				val threshold = 6.0f
 				// Get a random location
 				// might offload picking random location to api
 				if (gyroChange > threshold) {
-					navController.navigate("${Screen.LocationDetails.route}/${locations.searchByCategory(LocationCategory.PEARL).random().id}")
+					navController.navigate("${Screen.LocationDetails.route}/${LocationService.searchByCategory(LocationCategory.PEARL).random().id}")
 				}
 
 			}

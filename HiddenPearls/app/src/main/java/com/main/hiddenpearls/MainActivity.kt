@@ -13,7 +13,6 @@ import androidx.navigation.compose.rememberNavController
 import com.main.hiddenpearls.ui.theme.HiddenPearlsTheme
 
 class MainActivity : ComponentActivity() {
-	val locations: LocationService = LocationService();
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent {

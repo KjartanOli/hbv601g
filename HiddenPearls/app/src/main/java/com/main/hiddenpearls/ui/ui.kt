@@ -12,9 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 import com.main.hiddenpearls.Location
 import com.main.hiddenpearls.LocationService
 import com.main.hiddenpearls.ShakeForPearl
+import com.main.hiddenpearls.viewModels.HomeViewModel
+import com.main.hiddenpearls.viewModels.HomeUIState
 
 @Composable
 fun HomeView(
@@ -23,25 +27,30 @@ fun HomeView(
 	onNavigateToList: () -> Unit,
 	onNavigateToDetails: (id: Long) -> Unit,
 	modifier: Modifier = Modifier,
+	viewModel: HomeViewModel = viewModel(),
 	navController: NavHostController,
-	locations: LocationService
 ) {
-	ShakeForPearl(navController, locations)
+	ShakeForPearl(navController)
+	val uiState = viewModel.uiState
 
-	Column (
-		modifier = Modifier
-			.padding(12.dp)
-	) {
-		LocationList(
-			heading = "Pearls",
-			locations = pearls,
-			onNavigateToDetails = onNavigateToDetails
-		)
-		LocationList(
-			heading = "Traps",
-			locations = traps,
-			onNavigateToDetails = onNavigateToDetails
-		)
+	when (uiState) {
+		is HomeUIState.Loading -> LoadingScreen()
+		is HomeUIState.Success -> Column (
+				modifier = Modifier
+					.padding(12.dp)
+			) {
+				LocationList(
+					heading = "Pearls",
+					locations = uiState.pearls,
+					onNavigateToDetails = onNavigateToDetails
+				)
+				LocationList(
+					heading = "Traps",
+					locations = uiState.traps,
+					onNavigateToDetails = onNavigateToDetails
+				)
+			}
+		is HomeUIState.Error -> ErrorScreen(uiState.error)
 	}
 }
 
@@ -86,7 +95,10 @@ fun LocationCard(
 }
 
 @Composable
-fun LocationDetails(location: Location) {
+fun LocationDetails(
+	location: Location,
+	modifier: Modifier = Modifier
+) {
 	Column (modifier = Modifier
 		.padding(12.dp)
 	) {
@@ -94,4 +106,17 @@ fun LocationDetails(location: Location) {
 		Text(text = location.category.toString())
 		Text(text = location.description)
 	}
+}
+
+@Composable
+fun LoadingScreen() {
+	Text(text = "Loading…")
+}
+
+@Composable
+fun ErrorScreen(error: String?) {
+	if (error != null)
+		Text(text = error)
+	else
+		Text(text = "Error!")
 }
