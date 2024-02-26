@@ -58,8 +58,8 @@ sealed class Screen(val route: String) {
 	data object Home : Screen("home")
 	data object LocationList : Screen("location_list")
 	data object LocationDetails : Screen("location")
-	//object NameSearch : Screen("search/name")
-	//object GPSSearch : Screen("search/gps")
+	data object NameSearch : Screen("search/name")
+	data object GPSSearch : Screen("search/gps")
 }
 
 @Composable
@@ -116,11 +116,34 @@ fun AppNavHost(
 				}
 			}
 		}
+
+		composable(
+			"NameSearch/{searchQuery}",
+			arguments = listOf(navArgument("searchQuery") { type = NavType.StringType })
+		) { backStackEntry ->
+			val searchQuery = backStackEntry.arguments?.getString("searchQuery")
+
+			if (searchQuery != null) {
+				val searchResults = locations.searchByName(searchQuery)
+				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+					LocationList(
+						heading = "Search Results",
+						locations = searchResults,
+						modifier = modifier.padding(innerPadding),
+						onNavigateToDetails = onNavigateToDetails
+					)
+				}
+			}
+		}
+
+
 	}
 }
 
 @Composable
 fun NavBar(navController: NavHostController) {
+
+
 	val showNameSearchDialog = remember { mutableStateOf(false) }
 	val showGPSSearchDialog = remember { mutableStateOf(false) }
 
@@ -187,16 +210,16 @@ fun NavBar(navController: NavHostController) {
 	)
 
 	if (showNameSearchDialog.value) {
+		// variable for search entry
+		var searchQuery by remember { mutableStateOf("") }
+
 		AlertDialog(
 			onDismissRequest = { showNameSearchDialog.value = false },
 			title = { Text("Search") },
 			text = {
-					// variable for search entry
-					var text by remember { mutableStateOf("") }
-
 					TextField(
-						value = text,
-						onValueChange = { text = it },
+						value = searchQuery,
+						onValueChange = { searchQuery = it },
 						label = { Text("Search for a pearl or trap...") }
 					)
 				   },
@@ -206,9 +229,12 @@ fun NavBar(navController: NavHostController) {
 				}
 							},
 			confirmButton = {
-				Button(onClick = { showNameSearchDialog.value = false
-				// use search results here, in 'text'
-					}) {
+				Button(onClick = {
+					showNameSearchDialog.value = false
+					// Pass the search query to the route
+					navController.navigate("NameSearch/$searchQuery")
+					// note: we're not handling
+				}) {
 					Text("Search")
 				}
 			}
@@ -221,15 +247,15 @@ fun NavBar(navController: NavHostController) {
 			title = { Text("Radius Search") },
 			text = {
 				// State for the text field
-				var dist by remember { mutableFloatStateOf(0f) }
+				var searchDistance by remember { mutableFloatStateOf(0f) }
 
 				Column {
-					Text(text = "Search radius: ${dist.toInt()} km",
+					Text(text = "Search radius: ${searchDistance.toInt()} km",
 						modifier = Modifier
 						.padding(5.dp))
 					Slider(
-						value = dist,
-						onValueChange = { dist = it },
+						value = searchDistance,
+						onValueChange = { searchDistance = it },
 						valueRange = 0f..100f
 					)
 				}
