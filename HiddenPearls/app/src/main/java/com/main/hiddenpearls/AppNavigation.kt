@@ -44,6 +44,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.main.hiddenpearls.ui.HomeView
+import com.main.hiddenpearls.ui.ListView
 import com.main.hiddenpearls.ui.LocationDetails
 import com.main.hiddenpearls.ui.LocationList
 import kotlin.math.pow
@@ -77,12 +78,8 @@ fun AppNavHost(
 		startDestination = startDestination
 	) {
 		composable(Screen.Home.route) {
-			val pearls = LocationService.searchByCategory(LocationCategory.PEARL, 5)
-			val traps = LocationService.searchByCategory(LocationCategory.TRAP, 5)
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				HomeView(
-					pearls = pearls,
-					traps = traps,
 					modifier = modifier.padding(innerPadding),
 					onNavigateToList = {
 						navController.navigate(Screen.LocationList.route)
@@ -96,9 +93,7 @@ fun AppNavHost(
 
 		composable(Screen.LocationList.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
-				LocationList(
-					heading = "Locations",
-					locations = LocationService.getLocations(),
+				ListView(
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
@@ -275,7 +270,7 @@ fun ShakeForPearl(navController: NavHostController) {
 				// Get a random location
 				// might offload picking random location to api
 				if (gyroChange > threshold) {
-					navController.navigate("${Screen.LocationDetails.route}/${LocationService.searchByCategory(LocationCategory.PEARL).random().id}")
+					navController.navigate("${Screen.LocationDetails.route}/${LocationService.random().id}")
 				}
 
 			}

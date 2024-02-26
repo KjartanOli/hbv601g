@@ -72,73 +72,7 @@ data class Location (
 	val description: String,
 	val category: LocationCategory,
 	@Serializable(with=GPSLocationSerializer::class)
+	@SerialName("loc")
 	val location: GPSLocation,
 	val statistics: List<VisitStatistic>
 )
-
-object LocationService {
-	fun getLocations(limit: Int? = null): List<Location> {
-		return listOf<Location>(Location(
-			id = 0,
-			name = "Hafravatn",
-			description = "Overlooked lake near the capitol area",
-			category = LocationCategory.PEARL,
-			location = GPSLocation(""),
-			statistics = listOf<VisitStatistic>()
-		), Location(
-			id = 1,
-			name = "Hallgrímskirkja",
-			description = "Beautiful, but swamped",
-			category = LocationCategory.TRAP,
-			location = GPSLocation(""),
-			statistics = listOf<VisitStatistic>()
-		))
-	}
-
-	fun searchById(id: Long): Location {
-		return Location(
-			id = id,
-			name = "Test Pearl",
-			description = "A beautiful place, where no one goes",
-			category = LocationCategory.PEARL,
-			location = GPSLocation(""),
-			statistics = listOf<VisitStatistic>()
-		)
-	}
-
-	fun searchByCategory(category: LocationCategory, limit: Int? = null): List<Location> {
-		return if (category == LocationCategory.PEARL)
-				   {
-					   listOf<Location>(Location(
-						   id = 0,
-						   name = "Hafravatn",
-						   description = "Overlooked lake near the capitol area",
-						   category = LocationCategory.PEARL,
-						   location = GPSLocation(""),
-						   statistics = listOf<VisitStatistic>()
-					   ))
-				   }
-				   else
-				   {
-					   listOf<Location>(Location(
-						   id = 1,
-						   name = "Hallgrímskirkja",
-						   description = "Beautiful, but swamped",
-						   category = LocationCategory.TRAP,
-						   location = GPSLocation(""),
-						   statistics = listOf<VisitStatistic>()
-					   ))
-				   }
-	}
-
-	fun searchByName(name: String) : Location {
-		return Location(
-			id = 0,
-			name = "Hafravatn",
-			description = "Overlooked lake near the capitol area",
-			category = LocationCategory.PEARL,
-			location = GPSLocation(""),
-			statistics = listOf<VisitStatistic>()
-		)
-	}
-}

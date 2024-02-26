@@ -21,9 +21,23 @@ sealed interface HomeUIState {
 	data class Error(val error: String?) : HomeUIState
 }
 
-class HomeViewModel(
-	savedStateHandle: SavedStateHandle
-) : ViewModel() {
+sealed interface ListUIState {
+	data object Loading : ListUIState
+	data class Success(
+		val locations: List<Location>
+	) : ListUIState
+	data class Error(val error: String?) : ListUIState
+}
+
+sealed interface DetailState {
+	data object Loading : DetailState
+	data class Success(
+		val location: Location
+	) : DetailState
+	data class Error(val error: String?) : DetailState
+}
+
+class HomeViewModel() : ViewModel() {
 	var uiState: HomeUIState by mutableStateOf(HomeUIState.Loading)
 	private set
 
@@ -34,8 +48,8 @@ class HomeViewModel(
 	private fun getData() {
 		viewModelScope.launch {
 			uiState = try {
-				val pearls = LocationService.searchByCategory(LocationCategory.PEARL, 5)
-				val traps = LocationService.searchByCategory(LocationCategory.TRAP, 5)
+				val pearls = LocationService.searchByCategory(LocationCategory.PEARL, 3)
+				val traps = LocationService.searchByCategory(LocationCategory.TRAP, 3)
 				HomeUIState.Success(pearls = pearls, traps = traps)
 			} catch (e: Exception) {
 				HomeUIState.Error(e.message)
@@ -43,3 +57,45 @@ class HomeViewModel(
 		}
 	}
 }
+
+class ListViewModel() : ViewModel() {
+	var uiState: ListUIState by mutableStateOf(ListUIState.Loading)
+	private set
+
+	init {
+		getData()
+	}
+
+	private fun getData() {
+		viewModelScope.launch {
+			uiState = try {
+				val locations = LocationService.getLocations()
+				ListUIState.Success(locations)
+			} catch (e: Exception) {
+				ListUIState.Error(e.message)
+			}
+		}
+	}
+}
+
+/* class DetailViewModel( */
+/* 	savedStateHandle: SavedStateHandle */
+/* ) : ViewModel() { */
+/* 	var uiState: DetailState by mutableStateOf(DetailState.Loading) */
+/* 	private set */
+
+/* 	init { */
+/* 		getData() */
+/* 	} */
+
+/* 	private fun getData() { */
+/* 		viewModelScope.launch { */
+/* 			uiState = try { */
+/* 				val location = LocationService.searchById() */
+/* 				DetailState.Success(location) */
+/* 			} catch (e: Exception) { */
+/* 				DetailState.Error(e.message) */
+/* 			} */
+/* 		} */
+/* 	} */
+/* } */
