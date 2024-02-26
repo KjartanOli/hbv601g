@@ -131,14 +131,14 @@ class LocationService {
 				   }
 	}
 
-	fun searchByName(name: String) : Location {
-		return Location(
+	fun searchByName(name: String) : List<Location> {
+		return listOf<Location>(Location(
 			id = 0,
 			name = "Hafravatn",
 			description = "Overlooked lake near the capitol area",
 			category = LocationCategory.PEARL,
 			location = GPSLocation(""),
 			statistics = listOf<VisitStatistic>()
-		)
+		))
 	}
 }
