@@ -273,7 +273,7 @@ fun ShakeForPearl(navController: NavHostController, locations: LocationService) 
 						+ (event?.values?.get(2)?.pow(2) ?: 0f))
 				)
 
-				val threshold = 2.0f
+				val threshold = 6.0f
 				// Get a random location
 				// might offload picking random location to api
 				if (gyroChange > threshold) {
