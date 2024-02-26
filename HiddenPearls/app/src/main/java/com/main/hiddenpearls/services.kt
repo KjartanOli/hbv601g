@@ -55,15 +55,15 @@ object LocationService {
 		return client.get("locations?category=$category&limit=$limit").body()
 	}
 
-	fun searchByName(name: String) : Location {
-		return Location(
+	fun searchByName(name: String) : List<Location> {
+		return listOf(Location(
 			id = 0,
 			name = "Hafravatn",
 			description = "Overlooked lake near the capitol area",
 			category = LocationCategory.PEARL,
 			location = GPSLocation(""),
 			statistics = listOf<VisitStatistic>()
-		)
+		))
 	}
 
 	fun random(): Location {
