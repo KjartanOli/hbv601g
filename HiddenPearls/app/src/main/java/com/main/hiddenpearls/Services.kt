@@ -26,7 +26,7 @@ object LocationService {
 				/* host = "localhost" */
 				/* port = 9090 */
 				protocol = URLProtocol.HTTPS
-				host = "hidden-pearls.onrender.com/"
+				host = "hidden-pearls.onrender.com"
 				path("api/")
 			}
 		}
