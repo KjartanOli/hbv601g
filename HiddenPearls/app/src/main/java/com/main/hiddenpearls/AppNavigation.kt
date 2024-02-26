@@ -124,7 +124,7 @@ fun AppNavHost(
 			val searchQuery = backStackEntry.arguments?.getString("searchQuery")
 
 			if (searchQuery != null) {
-				val searchResults = locations.searchByName(searchQuery)
+				val searchResults = LocationService.searchByName(searchQuery)
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 					LocationList(
 						heading = "Search Results",
