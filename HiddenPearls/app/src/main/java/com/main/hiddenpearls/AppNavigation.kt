@@ -231,9 +231,12 @@ fun NavBar(navController: NavHostController) {
 			confirmButton = {
 				Button(onClick = {
 					showNameSearchDialog.value = false
-					// Pass the search query to the route
-					navController.navigate("NameSearch/$searchQuery")
-					// note: we're not handling
+					// if no text is entered, dialog is closed on pressing search
+					if ( searchQuery.isNotEmpty()) {
+						// Pass the search query to the route
+						navController.navigate("NameSearch/$searchQuery")
+					}
+
 				}) {
 					Text("Search")
 				}
