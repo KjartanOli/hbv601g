@@ -5,7 +5,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -349,10 +348,8 @@ fun ShakeForPearl(navController: NavHostController) {
 // Splash Screen
 @Composable
 fun SplashScreen(navController: NavHostController) {
-	// Your animation logic (if any)
-	val scale = remember { Animatable(0f) }
 	Image(
-		painter = painterResource(id = R.drawable.ic_splash), // Your image resource
+		painter = painterResource(id = R.drawable.ic_splash), // Image source
 		contentDescription = "Hidden Pearls Logo",
 		modifier = Modifier.fillMaxSize()
 	)
