@@ -72,7 +72,7 @@ sealed class Screen(val route: String) {
 fun AppNavHost(
 	modifier: Modifier = Modifier,
 	navController: NavHostController,
-	startDestination: String = Screen.Home.route
+	startDestination: String = "splash_screen"
 ) {
 	val onNavigateToDetails = {
 		id: Long ->  navController.navigate("${Screen.LocationDetails.route}/$id")
@@ -81,7 +81,7 @@ fun AppNavHost(
 	NavHost(
 		modifier = modifier,
 		navController = navController,
-		startDestination = "splash_screen"
+		startDestination = startDestination
 	) {
 
 		composable("splash_screen") {
@@ -108,6 +108,28 @@ fun AppNavHost(
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
+			}
+		}
+
+		composable(Screen.Favorites.route) {
+				val favIDs = listOf(0)// to-come: implementing database for ids of favorites
+
+				if (favIDs != null) {
+					val searchResults = LocationService.getLocations(favIDs)
+					Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+						LocationList(
+							heading = "Favorites",
+							locations = searchResults,
+							modifier = modifier.padding(innerPadding),
+							onNavigateToDetails = onNavigateToDetails
+						)
+					}
+				} else {
+					Scaffold(bottomBar = { NavBar(navController) }) { _ ->
+					Text(
+						text = "No locations have been favorited"
+					)
+				}
 			}
 		}
 

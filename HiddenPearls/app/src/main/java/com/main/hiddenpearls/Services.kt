@@ -1,19 +1,19 @@
 package com.main.hiddenpearls
 
-import android.location.Location as GPSLocation;
-
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.*
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import io.ktor.client.plugins.logging.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.DEFAULT
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.get
+import io.ktor.http.HttpHeaders
+import io.ktor.http.URLProtocol
+import io.ktor.http.path
+import io.ktor.serialization.kotlinx.json.json
+import android.location.Location as GPSLocation
 
 object LocationService {
 	val client: HttpClient = HttpClient(){
@@ -38,6 +38,17 @@ object LocationService {
 	}
 	suspend fun getLocations(limit: Int? = null): List<Location> {
 		return client.get("locations").body()
+	}
+
+	fun getLocations(favIDs: List<Int>): List<Location> {
+		return listOf(Location(
+			id = 0,
+			name = "Hafravatn",
+			description = "Overlooked lake near the capitol area",
+			category = LocationCategory.PEARL,
+			location = GPSLocation(""),
+			statistics = listOf<VisitStatistic>()
+		))
 	}
 
 	fun searchById(id: Long): Location {
