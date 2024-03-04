@@ -6,6 +6,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.cache.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -20,6 +21,7 @@ object LocationService {
 		install(ContentNegotiation) {
 			json()
 		}
+		install(HttpCache)
 		defaultRequest {
 			url {
 				/* protocol = URLProtocol.HTTP */
