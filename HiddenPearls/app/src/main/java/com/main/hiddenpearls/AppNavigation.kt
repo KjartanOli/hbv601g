@@ -5,6 +5,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationOn
@@ -28,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -47,6 +52,7 @@ import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.ListView
 import com.main.hiddenpearls.ui.LocationDetails
 import com.main.hiddenpearls.ui.LocationList
+import kotlinx.coroutines.delay
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -56,6 +62,7 @@ import kotlin.math.sqrt
 
 sealed class Screen(val route: String) {
 	data object Home : Screen("home")
+	data object Favorites : Screen("favorites")
 	data object LocationList : Screen("location_list")
 	data object LocationDetails : Screen("location")
 	data object NameSearch : Screen("search/name")
@@ -75,8 +82,13 @@ fun AppNavHost(
 	NavHost(
 		modifier = modifier,
 		navController = navController,
-		startDestination = startDestination
+		startDestination = "splash_screen"
 	) {
+
+		composable("splash_screen") {
+			SplashScreen(navController = navController)
+		}
+
 		composable(Screen.Home.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				HomeView(
@@ -156,19 +168,6 @@ fun NavBar(navController: NavHostController) {
 					.padding(8.dp),
 				horizontalArrangement = Arrangement.Center
 			) {
-				// Home
-				IconButton(onClick = { navController.navigate(Screen.Home.route) },
-					modifier = Modifier
-						.fillMaxSize()
-						.weight(1f)) {
-					Icon(
-						Icons.Filled.Home,
-						contentDescription = "Home",
-						modifier = Modifier
-							.fillMaxSize()
-							.padding(5.dp)
-					)
-				}
 				// Name Search
 				IconButton(onClick = { showNameSearchDialog.value = true },
 					modifier = Modifier
@@ -193,6 +192,32 @@ fun NavBar(navController: NavHostController) {
 							.padding(5.dp)
 					)
 				}
+				// Home
+				IconButton(onClick = { navController.navigate(Screen.Home.route) },
+					modifier = Modifier
+						.fillMaxSize()
+						.weight(1f)) {
+					Icon(
+						Icons.Filled.Home,
+						contentDescription = "Home",
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(3.dp)
+					)
+				}
+				// Favorites INPROGRESS
+				IconButton(onClick = { navController.navigate(Screen.Favorites.route) },
+					modifier = Modifier
+						.fillMaxSize()
+						.weight(1f)) {
+					Icon(
+						Icons.Filled.Favorite,
+						contentDescription = "Favorites",
+						modifier = Modifier
+							.fillMaxSize()
+							.padding(5.dp)
+					)
+				}
 				// Location List
 				IconButton(onClick = { navController.navigate(Screen.LocationList.route) },
 					modifier = Modifier
@@ -209,6 +234,7 @@ fun NavBar(navController: NavHostController) {
 		}
 	)
 
+	// Dialog for NameSearch
 	if (showNameSearchDialog.value) {
 		// variable for search entry
 		var searchQuery by remember { mutableStateOf("") }
@@ -243,7 +269,7 @@ fun NavBar(navController: NavHostController) {
 			}
 		)
 	}
-
+	// Dialog for GPSSearch
 	if (showGPSSearchDialog.value) {
 		AlertDialog(
 			onDismissRequest = { showGPSSearchDialog.value = false },
@@ -319,6 +345,25 @@ fun ShakeForPearl(navController: NavHostController) {
 		}
 	}
 }
+
+// Splash Screen
+@Composable
+fun SplashScreen(navController: NavHostController) {
+	// Your animation logic (if any)
+	val scale = remember { Animatable(0f) }
+	Image(
+		painter = painterResource(id = R.drawable.ic_splash), // Your image resource
+		contentDescription = "Hidden Pearls Logo",
+		modifier = Modifier.fillMaxSize()
+	)
+
+	// Delay and navigate to the main screen
+	LaunchedEffect(key1 = true) {
+		delay(2000) // Adjust the delay as needed
+		navController.navigate("home")
+	}
+}
+
 
 // previews below
 @Preview
