@@ -72,7 +72,7 @@ sealed class Screen(val route: String) {
 fun AppNavHost(
 	modifier: Modifier = Modifier,
 	navController: NavHostController,
-	startDestination: String = "splash_screen"
+	startDestination: String = "home"
 ) {
 	val onNavigateToDetails = {
 		id: Long ->  navController.navigate("${Screen.LocationDetails.route}/$id")
@@ -84,9 +84,9 @@ fun AppNavHost(
 		startDestination = startDestination
 	) {
 
-		composable("splash_screen") {
+		/*composable("splash_screen") {
 			SplashScreen(navController = navController)
-		}
+		}*/
 
 		composable(Screen.Home.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
@@ -367,7 +367,7 @@ fun ShakeForPearl(navController: NavHostController) {
 	}
 }
 
-// Splash Screen
+/*// Splash Screen
 @Composable
 fun SplashScreen(navController: NavHostController) {
 	Image(
@@ -381,7 +381,7 @@ fun SplashScreen(navController: NavHostController) {
 		delay(2000) // Adjust the delay as needed
 		navController.navigate("home")
 	}
-}
+}*/
 
 
 // previews below
