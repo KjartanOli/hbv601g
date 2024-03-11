@@ -42,7 +42,7 @@ object LocationService {
 		return client.get("locations").body()
 	}
 
-	suspend fun getLocations(ids: List<Int>): List<Location> {
+	suspend fun getLocations(ids: List<Long>): List<Location> {
 		val ids = ids.joinToString(separator=",")
 		return client.get("locations?ids=$ids").body()
 	}
@@ -97,10 +97,13 @@ object LocationService {
 }
 
 object FavoritesService {
-	fun getFavorites(): List<Int> {
+	fun getFavorites(): List<Long> {
 		return listOf(1,2,3)
 	}
 
-	fun addToFavorites(id: Int) {}
-	fun removeFromFavorites(id: Int) {}
+	fun addToFavorites(id: Long) {}
+	fun removeFromFavorites(id: Long) {}
+	fun isFavorite(id: Long): Boolean {
+		return false
+	}
 }

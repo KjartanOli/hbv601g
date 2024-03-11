@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.main.hiddenpearls.Location
+import com.main.hiddenpearls.FavoritesService
 import com.main.hiddenpearls.ShakeForPearl
 import com.main.hiddenpearls.viewModels.FavoritesViewModel
 import com.main.hiddenpearls.viewModels.DetailsViewModel
@@ -143,8 +144,18 @@ fun DetailsView(
 			Text(text = uiState.location.category.toString())
 			Text(text = uiState.location.description)
 			Text(text = Json.encodeToString(uiState.location))
-			Button(onClick = { /*TODO: Call favorite/unfavorite*/ }) {
-
+			if (FavoritesService.isFavorite(uiState.location.id)) {
+				Button(onClick = {
+					FavoritesService.removeFromFavorites(uiState.location.id) })
+				{
+					Text(text = "Un-Favorite")
+				}
+			} else {
+				Button(onClick = {
+					FavoritesService.addToFavorites(uiState.location.id) })
+				{
+					Text(text = "Favorite")
+				}
 			}
 		}
 		is DetailsState.Error -> ErrorScreen(uiState.error)
