@@ -65,6 +65,7 @@ sealed class Screen(val route: String) {
 	data object Favorites : Screen("favorites")
 	data object LocationList : Screen("location_list")
 	data object Details : Screen("location")
+	data object Random : Screen("random")
 	data object NameSearch : Screen("search/name")
 	data object GPSSearch : Screen("search/gps")
 }
@@ -125,7 +126,6 @@ fun AppNavHost(
 			val id = backStackEntry.arguments?.getLong("id")
 
 			if (id != null) {
-				val location = LocationService.searchById(id)
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 					DetailsView(
 						modifier = modifier.padding(innerPadding)
@@ -330,7 +330,7 @@ fun ShakeForPearl(navController: NavHostController) {
 				// Get a random location
 				// might offload picking random location to api
 				if (gyroChange > threshold) {
-					navController.navigate("${Screen.Details.route}/${LocationService.random().id}")
+					navController.navigate(Screen.Random.route)
 				}
 
 			}

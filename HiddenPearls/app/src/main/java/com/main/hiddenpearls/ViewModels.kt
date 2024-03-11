@@ -142,30 +142,50 @@ class DetailsViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 	}
 }
 
-class GPSSearchViewModel() : ViewModel() {
-	var uiState: GPSState by mutableStateOf(GPSState.Loading)
+class RandomViewModel() : ViewModel() {
+	var uiState: DetailsState by mutableStateOf(DetailsState.Loading)
 	private set
-	val context = LocalContext.current
-	val locationClient = remember {
-        LocationServices.getFusedLocationProviderClient(context)
-    }
 
 	init {
 		getData()
 	}
 
-	@RequiresPermission(
-		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
-	)
 	private fun getData() {
 		viewModelScope.launch {
-			val location = locationClient.lastLocation.await()
-			if (location == null) {
-				GPSState.Error("Failed to get your current location")
-			} else {
-				val locations = LocationService.searchByLocation(location)
-				GPSState.Success(locations)
+			uiState = try {
+				val location = LocationService.random()
+				DetailsState.Success(location)
+			} catch (e: Exception) {
+				DetailsState.Error(e.message)
 			}
 		}
 	}
 }
+
+/* class GPSSearchViewModel() : ViewModel() { */
+/* 	var uiState: GPSState by mutableStateOf(GPSState.Loading) */
+/* 	private set */
+/* 	val context = LocalContext.current */
+/* 	val locationClient = remember { */
+/*         LocationServices.getFusedLocationProviderClient(context) */
+/*     } */
+
+/* 	init { */
+/* 		getData() */
+/* 	} */
+
+/* 	@RequiresPermission( */
+/* 		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION], */
+/* 	) */
+/* 	private fun getData() { */
+/* 		viewModelScope.launch { */
+/* 			val location = locationClient.lastLocation.await() */
+/* 			if (location == null) { */
+/* 				GPSState.Error("Failed to get your current location") */
+/* 			} else { */
+/* 				val locations = LocationService.searchByLocation(location) */
+/* 				GPSState.Success(locations) */
+/* 			} */
+/* 		} */
+/* 	} */
+/* } */

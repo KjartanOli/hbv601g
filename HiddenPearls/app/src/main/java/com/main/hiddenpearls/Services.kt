@@ -47,15 +47,8 @@ object LocationService {
 		return client.get("locations?ids=$ids").body()
 	}
 
-	fun searchById(id: Long): Location {
-		return Location(
-			id = id,
-			name = "Test Pearl",
-			description = "A beautiful place, where no one goes",
-			category = LocationCategory.PEARL,
-			location = GPSLocation(""),
-			statistics = listOf<VisitStatistic>()
-		)
+	suspend fun searchById(id: Long): Location {
+		return client.get("locations/$id").body()
 	}
 
 	suspend fun searchByCategory(category: LocationCategory, limit: Int? = null): List<Location> {
@@ -84,15 +77,8 @@ object LocationService {
 		))
 	}
 
-	fun random(): Location {
-		return Location(
-			id = 0,
-			name = "Hafravatn",
-			description = "Overlooked lake near the capitol area",
-			category = LocationCategory.PEARL,
-			location = GPSLocation(""),
-			statistics = listOf<VisitStatistic>()
-		)
+	suspend fun random(): Location {
+		return client.get("locations/random").body()
 	}
 }
 

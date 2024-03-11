@@ -34,6 +34,7 @@ import com.main.hiddenpearls.FavoritesService
 import com.main.hiddenpearls.ShakeForPearl
 import com.main.hiddenpearls.viewModels.FavoritesViewModel
 import com.main.hiddenpearls.viewModels.DetailsViewModel
+import com.main.hiddenpearls.viewModels.RandomViewModel
 import com.main.hiddenpearls.viewModels.HomeUIState
 import com.main.hiddenpearls.viewModels.HomeViewModel
 import com.main.hiddenpearls.viewModels.ListUIState
@@ -135,29 +136,21 @@ fun DetailsView(
 
 	when (uiState) {
 		is DetailsState.Loading -> LoadingScreen()
-		is DetailsState.Success -> 	Column (modifier = Modifier
-		.padding(12.dp)
-		) {
-			Text(text = uiState.location.name,
-				fontWeight = FontWeight.Bold,
-				fontSize = 24.sp)
-			Text(text = uiState.location.category.toString())
-			Text(text = uiState.location.description)
-			Text(text = Json.encodeToString(uiState.location))
-			if (FavoritesService.isFavorite(uiState.location.id)) {
-				Button(onClick = {
-					FavoritesService.removeFromFavorites(uiState.location.id) })
-				{
-					Text(text = "Un-Favorite")
-				}
-			} else {
-				Button(onClick = {
-					FavoritesService.addToFavorites(uiState.location.id) })
-				{
-					Text(text = "Favorite")
-				}
-			}
-		}
+		is DetailsState.Success -> LocationDetails(uiState.location)
+		is DetailsState.Error -> ErrorScreen(uiState.error)
+	}
+}
+
+@Composable
+fun RandomView(
+	viewModel: RandomViewModel = viewModel(),
+	modifier: Modifier = Modifier
+) {
+	val uiState = viewModel.uiState
+
+	when (uiState) {
+		is DetailsState.Loading -> LoadingScreen()
+		is DetailsState.Success -> LocationDetails(uiState.location)
 		is DetailsState.Error -> ErrorScreen(uiState.error)
 	}
 }
@@ -218,7 +211,34 @@ fun LocationCard(
 			modifier = Modifier
 				.padding(horizontal = 10.dp, vertical = 3.dp))
 		}
+}
+
+@Composable
+fun LocationDetails(location: Location) {
+	Column (modifier = Modifier
+			.padding(12.dp)
+	) {
+		Text(text = location.name,
+			fontWeight = FontWeight.Bold,
+			fontSize = 24.sp)
+		Text(text = location.category.toString())
+		Text(text = location.description)
+		Text(text = Json.encodeToString(location))
+		if (FavoritesService.isFavorite(location.id)) {
+			Button(onClick = {
+				FavoritesService.removeFromFavorites(location.id) })
+			{
+				Text(text = "Un-Favorite")
+			}
+		} else {
+			Button(onClick = {
+				FavoritesService.addToFavorites(location.id) })
+			{
+				Text(text = "Favorite")
+			}
+		}
 	}
+}
 
 @Composable
 fun LoadingScreen() {
