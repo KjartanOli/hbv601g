@@ -57,13 +57,15 @@ fun HomeView(
 					.padding(12.dp)
 					/* .verticalScroll(rememberScrollState()) */
 			) {
+				Text(text = "HIDDEN PEARLS", fontWeight = FontWeight.Bold, fontSize = 32.sp)
+
 				LocationList(
-					heading = "Pearls",
+					heading = "Best Pearls",
 					locations = uiState.pearls,
 					onNavigateToDetails = onNavigateToDetails
 				)
 				LocationList(
-					heading = "Traps",
+					heading = "Worst Traps",
 					locations = uiState.traps,
 					onNavigateToDetails = onNavigateToDetails
 				)
