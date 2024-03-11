@@ -50,7 +50,7 @@ import androidx.navigation.navArgument
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.ListView
 import com.main.hiddenpearls.ui.FavoritesView
-import com.main.hiddenpearls.ui.LocationDetails
+import com.main.hiddenpearls.ui.DetailsView
 import com.main.hiddenpearls.ui.LocationList
 import kotlinx.coroutines.delay
 import kotlin.math.pow
@@ -64,7 +64,7 @@ sealed class Screen(val route: String) {
 	data object Home : Screen("home")
 	data object Favorites : Screen("favorites")
 	data object LocationList : Screen("location_list")
-	data object LocationDetails : Screen("location")
+	data object Details : Screen("location")
 	data object NameSearch : Screen("search/name")
 	data object GPSSearch : Screen("search/gps")
 }
@@ -76,7 +76,7 @@ fun AppNavHost(
 	startDestination: String = "home"
 ) {
 	val onNavigateToDetails = {
-		id: Long ->  navController.navigate("${Screen.LocationDetails.route}/$id")
+		id: Long ->  navController.navigate("${Screen.Details.route}/$id")
 	}
 
 	NavHost(
@@ -93,9 +93,6 @@ fun AppNavHost(
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				HomeView(
 					modifier = modifier.padding(innerPadding),
-					onNavigateToList = {
-						navController.navigate(Screen.LocationList.route)
-					},
 					onNavigateToDetails = onNavigateToDetails,
 					navController = navController,
 				)
@@ -122,7 +119,7 @@ fun AppNavHost(
 		}
 
 		composable(
-			"${Screen.LocationDetails.route}/{id}",
+			"${Screen.Details.route}/{id}",
 			arguments = listOf(navArgument("id") { type = NavType.LongType })
 		) { backStackEntry ->
 			val id = backStackEntry.arguments?.getLong("id")
@@ -130,8 +127,7 @@ fun AppNavHost(
 			if (id != null) {
 				val location = LocationService.searchById(id)
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
-					LocationDetails(
-						location = location,
+					DetailsView(
 						modifier = modifier.padding(innerPadding)
 					)
 				}
@@ -334,7 +330,7 @@ fun ShakeForPearl(navController: NavHostController) {
 				// Get a random location
 				// might offload picking random location to api
 				if (gyroChange > threshold) {
-					navController.navigate("${Screen.LocationDetails.route}/${LocationService.random().id}")
+					navController.navigate("${Screen.Details.route}/${LocationService.random().id}")
 				}
 
 			}

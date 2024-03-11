@@ -35,13 +35,14 @@ import com.main.hiddenpearls.LocationService
 import com.main.hiddenpearls.ShakeForPearl
 import com.main.hiddenpearls.viewModels.HomeViewModel
 import com.main.hiddenpearls.viewModels.FavoritesViewModel
+import com.main.hiddenpearls.viewModels.DetailsViewModel
 import com.main.hiddenpearls.viewModels.HomeUIState
 import com.main.hiddenpearls.viewModels.ListViewModel
 import com.main.hiddenpearls.viewModels.ListUIState
+import com.main.hiddenpearls.viewModels.DetailsState
 
 @Composable
 fun HomeView(
-	onNavigateToList: () -> Unit,
 	onNavigateToDetails: (id: Long) -> Unit,
 	modifier: Modifier = Modifier,
 	viewModel: HomeViewModel = viewModel(),
@@ -123,6 +124,27 @@ fun FavoritesView(
 }
 
 @Composable
+fun DetailsView(
+	viewModel: DetailsViewModel = viewModel(),
+	modifier: Modifier = Modifier
+) {
+	val uiState = viewModel.uiState
+
+	when (uiState) {
+		is DetailsState.Loading -> LoadingScreen()
+		is DetailsState.Success -> Column (modifier = Modifier
+			.padding(12.dp)
+		) {
+			Text(text = uiState.location.name)
+			Text(text = uiState.location.category.toString())
+			Text(text = uiState.location.description)
+			Text(text = Json.encodeToString(uiState.location))
+		}
+		is DetailsState.Error -> ErrorScreen(uiState.error)
+	}
+}
+
+@Composable
 fun LocationList(
 	heading: String,
 	locations: List<Location>,
@@ -159,21 +181,6 @@ fun LocationCard(
 		Button(onClick = { onNavigateToDetails(location.id) }) {
 			Text(text = "See more")
 		}
-		Text(text = Json.encodeToString(location))
-	}
-}
-
-@Composable
-fun LocationDetails(
-	location: Location,
-	modifier: Modifier = Modifier
-) {
-	Column (modifier = Modifier
-		.padding(12.dp)
-	) {
-		Text(text = location.name)
-		Text(text = location.category.toString())
-		Text(text = location.description)
 		Text(text = Json.encodeToString(location))
 	}
 }

@@ -1,5 +1,11 @@
 package com.main.hiddenpearls.viewModels
 
+import androidx.annotation.RequiresPermission
+import android.location.Location as GPSLocation
+import android.Manifest
+import com.google.android.gms.location.LocationServices
+import androidx.compose.ui.platform.LocalContext
+
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +25,7 @@ sealed interface HomeUIState {
 		val pearls: List<Location>,
 		val traps: List<Location>
 	) : HomeUIState
-	data class Error(val error: String?) : HomeUIState
+	data class Error(val error: String? = null) : HomeUIState
 }
 
 sealed interface ListUIState {
@@ -27,15 +33,21 @@ sealed interface ListUIState {
 	data class Success(
 		val locations: List<Location>
 	) : ListUIState
-	data class Error(val error: String?) : ListUIState
+	data class Error(val error: String? = null) : ListUIState
 }
 
-sealed interface DetailState {
-	data object Loading : DetailState
+sealed interface DetailsState {
+	data object Loading : DetailsState
 	data class Success(
 		val location: Location
-	) : DetailState
-	data class Error(val error: String?) : DetailState
+	) : DetailsState
+	data class Error(val error: String? = null) : DetailsState
+}
+
+sealed interface GPSState {
+	data object Loading : GPSState
+	data class Success(val locations: List<Location>) : GPSState
+	data class Error(val error: String? = null) : GPSState
 }
 
 class HomeViewModel() : ViewModel() {
@@ -105,24 +117,55 @@ class FavoritesViewModel() : ViewModel() {
 	}
 }
 
-/* class DetailViewModel( */
-/* 	savedStateHandle: SavedStateHandle */
-/* ) : ViewModel() { */
-/* 	var uiState: DetailState by mutableStateOf(DetailState.Loading) */
-/* 	private set */
+class DetailsViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+	private val id = savedStateHandle.get<Long>("id")
+	var uiState: DetailsState by mutableStateOf(DetailsState.Loading)
+	private set
 
-/* 	init { */
-/* 		getData() */
-/* 	} */
+	init {
+		getData()
+	}
 
-/* 	private fun getData() { */
-/* 		viewModelScope.launch { */
-/* 			uiState = try { */
-/* 				val location = LocationService.searchById() */
-/* 				DetailState.Success(location) */
-/* 			} catch (e: Exception) { */
-/* 				DetailState.Error(e.message) */
-/* 			} */
-/* 		} */
-/* 	} */
-/* } */
+	private fun getData() {
+		viewModelScope.launch {
+			uiState = try {
+				if (id == null) {
+					DetailsState.Error()
+				} else {
+					val location = LocationService.searchById(id)
+					DetailsState.Success(location)
+				}
+			} catch (e: Exception) {
+				DetailsState.Error(e.message)
+			}
+		}
+	}
+}
+
+class GPSSearchViewModel() : ViewModel() {
+	var uiState: GPSState by mutableStateOf(GPSState.Loading)
+	private set
+	val context = LocalContext.current
+	val locationClient = remember {
+        LocationServices.getFusedLocationProviderClient(context)
+    }
+
+	init {
+		getData()
+	}
+
+	@RequiresPermission(
+		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
+	)
+	private fun getData() {
+		viewModelScope.launch {
+			val location = locationClient.lastLocation.await()
+			if (location == null) {
+				GPSState.Error("Failed to get your current location")
+			} else {
+				val locations = LocationService.searchByLocation(location)
+				GPSState.Success(locations)
+			}
+		}
+	}
+}

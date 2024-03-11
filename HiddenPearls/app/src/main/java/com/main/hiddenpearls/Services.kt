@@ -73,6 +73,17 @@ object LocationService {
 		))
 	}
 
+	fun searchByLocation(location: GPSLocation): List<Location> {
+		return listOf(Location(
+			id = 0,
+			name = "Hafravatn",
+			description = "Overlooked lake near the capitol area",
+			category = LocationCategory.PEARL,
+			location = GPSLocation(""),
+			statistics = listOf<VisitStatistic>()
+		))
+	}
+
 	fun random(): Location {
 		return Location(
 			id = 0,
