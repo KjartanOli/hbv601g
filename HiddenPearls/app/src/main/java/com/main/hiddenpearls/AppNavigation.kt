@@ -359,7 +359,7 @@ fun SplashScreen(navController: NavHostController) {
 		contentDescription = "Hidden Pearls Logo",
 		modifier = Modifier.fillMaxSize()
 	)
-1
+
 	// Delay and navigate to the main screen
 	LaunchedEffect(key1 = true) {
 		delay(2000) // Adjust the delay as needed
