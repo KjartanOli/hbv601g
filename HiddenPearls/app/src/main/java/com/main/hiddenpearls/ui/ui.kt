@@ -180,7 +180,24 @@ fun LocationDetails(
 
 @Composable
 fun LoadingScreen() {
-	Text(text = "Loading…")
+	Box(
+		modifier = Modifier
+			.height(100.dp)
+			.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+	){
+		/* Image( */
+		/* 	painter = painterResource(id = R.drawable.ic_splash), // Image source */
+		/* 	contentDescription = "Hidden Pearls Logo", */
+		/* 	modifier = Modifier.fillMaxSize() */
+		/* ) */
+		CircularProgressIndicator(
+			modifier = Modifier.width(64.dp),
+			color = MaterialTheme.colorScheme.secondary,
+			trackColor = MaterialTheme.colorScheme.surfaceVariant,
+		)
+	}
+	/* Text(text = "Loading…") */
 }
 
 @Composable
