@@ -197,16 +197,24 @@ fun LocationCard(
 		.clip(shape = RoundedCornerShape(5.dp))
 		.padding(5.dp)
 		.clip(RoundedCornerShape(5.dp))
-		.background(Color(0xff495d92), shape = RoundedCornerShape(5.dp))
-		.border(BorderStroke(3.dp, SolidColor(Color.Black))),) {
+		.background(
+			MaterialTheme.colorScheme.primary,
+			shape = RoundedCornerShape(5.dp)
+		)
+		.border(BorderStroke(3.dp, SolidColor(MaterialTheme.colorScheme.primary))),) {
 		Text(
 			text = location.name,
+			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
 				.padding(horizontal = 10.dp, vertical = 3.dp))
-		Text(text = location.category.toString(),
+		Text(
+			text = location.category.toString(),
+			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
 				.padding(horizontal = 10.dp, vertical = 3.dp))
-		Text(text = location.description,
+		Text(
+			text = location.description,
+			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
 				.padding(horizontal = 10.dp, vertical = 3.dp))
 		}
