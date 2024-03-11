@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import com.main.hiddenpearls.Location
 import com.main.hiddenpearls.LocationCategory
 import com.main.hiddenpearls.LocationService
+import com.main.hiddenpearls.FavoritesService
 
 sealed interface HomeUIState {
 	data object Loading : HomeUIState
@@ -71,6 +72,32 @@ class ListViewModel() : ViewModel() {
 			uiState = try {
 				val locations = LocationService.getLocations()
 				ListUIState.Success(locations)
+			} catch (e: Exception) {
+				ListUIState.Error(e.message)
+			}
+		}
+	}
+}
+
+class FavoritesViewModel() : ViewModel() {
+	var uiState: ListUIState by mutableStateOf(ListUIState.Loading)
+	private set
+
+	init {
+		getData()
+	}
+
+	private fun getData() {
+		viewModelScope.launch {
+			uiState = try {
+				val favorites = FavoritesService.getFavorites()
+				if (favorites.size == 0) {
+					ListUIState.Success(listOf())
+				} else {
+					val locations = LocationService.getLocations(favorites)
+					ListUIState.Success(locations)
+				}
+
 			} catch (e: Exception) {
 				ListUIState.Error(e.message)
 			}

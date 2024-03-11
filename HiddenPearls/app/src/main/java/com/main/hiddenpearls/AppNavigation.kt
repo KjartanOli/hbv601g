@@ -49,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.ListView
+import com.main.hiddenpearls.ui.FavoritesView
 import com.main.hiddenpearls.ui.LocationDetails
 import com.main.hiddenpearls.ui.LocationList
 import kotlinx.coroutines.delay
@@ -112,24 +113,11 @@ fun AppNavHost(
 		}
 
 		composable(Screen.Favorites.route) {
-				val favIDs = listOf(0)// to-come: implementing database for ids of favorites
-
-				if (favIDs != null) {
-					val searchResults = LocationService.getLocations(favIDs)
-					Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
-						LocationList(
-							heading = "Favorites",
-							locations = searchResults,
-							modifier = modifier.padding(innerPadding),
-							onNavigateToDetails = onNavigateToDetails
-						)
-					}
-				} else {
-					Scaffold(bottomBar = { NavBar(navController) }) { _ ->
-					Text(
-						text = "No locations have been favorited"
-					)
-				}
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+				FavoritesView(
+					modifier = modifier.padding(innerPadding),
+					onNavigateToDetails = onNavigateToDetails
+				)
 			}
 		}
 

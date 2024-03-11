@@ -42,15 +42,9 @@ object LocationService {
 		return client.get("locations").body()
 	}
 
-	fun getLocations(favIDs: List<Int>): List<Location> {
-		return listOf(Location(
-			id = 0,
-			name = "Hafravatn",
-			description = "Overlooked lake near the capitol area",
-			category = LocationCategory.PEARL,
-			location = GPSLocation(""),
-			statistics = listOf<VisitStatistic>()
-		))
+	suspend fun getLocations(ids: List<Int>): List<Location> {
+		val ids = ids.joinToString(separator=",")
+		return client.get("locations?ids=$ids").body()
 	}
 
 	fun searchById(id: Long): Location {
@@ -89,4 +83,13 @@ object LocationService {
 			statistics = listOf<VisitStatistic>()
 		)
 	}
+}
+
+object FavoritesService {
+	fun getFavorites(): List<Int> {
+		return listOf(1,2,3)
+	}
+
+	fun addToFavorites(id: Int) {}
+	fun removeFromFavorites(id: Int) {}
 }
