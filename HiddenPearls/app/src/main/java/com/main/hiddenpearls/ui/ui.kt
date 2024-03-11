@@ -1,43 +1,43 @@
 package com.main.hiddenpearls.ui
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavHostController
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.Serializable
-
+import androidx.navigation.NavHostController
 import com.main.hiddenpearls.Location
-import com.main.hiddenpearls.LocationService
 import com.main.hiddenpearls.ShakeForPearl
-import com.main.hiddenpearls.viewModels.HomeViewModel
 import com.main.hiddenpearls.viewModels.FavoritesViewModel
 import com.main.hiddenpearls.viewModels.HomeUIState
-import com.main.hiddenpearls.viewModels.ListViewModel
+import com.main.hiddenpearls.viewModels.HomeViewModel
 import com.main.hiddenpearls.viewModels.ListUIState
+import com.main.hiddenpearls.viewModels.ListViewModel
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun HomeView(
@@ -133,7 +133,7 @@ fun LocationList(
 		modifier = Modifier
 		.padding(12.dp)
 	) {
-		Text(text = heading)
+		Text(text = heading, fontWeight = FontWeight.Bold, fontSize = 24.sp)
 		Spacer(modifier = Modifier.height(12.dp))
 		LazyColumn {
 			items(locations) {
@@ -151,17 +151,26 @@ fun LocationCard(
 	location: Location,
 	onNavigateToDetails: (id: Long) -> Unit
 ) {
-	Column {
-		// we can make the whole column into a clickable button, instead of having a dedicated one
-		Text(text = location.name)
-		Text(text = location.category.toString())
-		Text(text = location.description)
-		Button(onClick = { onNavigateToDetails(location.id) }) {
-			Text(text = "See more")
+	Column (modifier = Modifier
+		.clickable { onNavigateToDetails(location.id) }
+		.fillMaxWidth()
+		.clip(shape = RoundedCornerShape(5.dp))
+		.padding(5.dp)
+		.clip(RoundedCornerShape(5.dp))
+		.background(Color(0xff495d92), shape = RoundedCornerShape(5.dp))
+		.border(BorderStroke(3.dp, SolidColor(Color.Black))),) {
+		Text(
+			text = location.name,
+			modifier = Modifier
+				.padding(horizontal = 10.dp, vertical = 3.dp))
+		Text(text = location.category.toString(),
+			modifier = Modifier
+				.padding(horizontal = 10.dp, vertical = 3.dp))
+		Text(text = location.description,
+			modifier = Modifier
+				.padding(horizontal = 10.dp, vertical = 3.dp))
 		}
-		Text(text = Json.encodeToString(location))
 	}
-}
 
 @Composable
 fun LocationDetails(
@@ -171,10 +180,15 @@ fun LocationDetails(
 	Column (modifier = Modifier
 		.padding(12.dp)
 	) {
-		Text(text = location.name)
+		Text(text = location.name,
+			fontWeight = FontWeight.Bold,
+			fontSize = 24.sp)
 		Text(text = location.category.toString())
 		Text(text = location.description)
 		Text(text = Json.encodeToString(location))
+		Button(onClick = { /*TODO: Call favorite/unfavorite*/ }) {
+
+		}
 	}
 }
 
