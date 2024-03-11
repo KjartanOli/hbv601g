@@ -19,27 +19,31 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.main.hiddenpearls.Location
 import com.main.hiddenpearls.FavoritesService
+import com.main.hiddenpearls.Location
 import com.main.hiddenpearls.ShakeForPearl
-import com.main.hiddenpearls.viewModels.FavoritesViewModel
+import com.main.hiddenpearls.viewModels.DetailsState
 import com.main.hiddenpearls.viewModels.DetailsViewModel
-import com.main.hiddenpearls.viewModels.RandomViewModel
+import com.main.hiddenpearls.viewModels.FavoritesViewModel
 import com.main.hiddenpearls.viewModels.HomeUIState
 import com.main.hiddenpearls.viewModels.HomeViewModel
 import com.main.hiddenpearls.viewModels.ListUIState
-import com.main.hiddenpearls.viewModels.DetailsState
 import com.main.hiddenpearls.viewModels.ListViewModel
+import com.main.hiddenpearls.viewModels.RandomViewModel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -55,24 +59,25 @@ fun HomeView(
 
 	when (uiState) {
 		is HomeUIState.Loading -> LoadingScreen()
-		is HomeUIState.Success -> Column (
-				modifier = Modifier
-					.padding(12.dp)
-					/* .verticalScroll(rememberScrollState()) */
-			) {
-				Text(text = "HIDDEN PEARLS", fontWeight = FontWeight.Bold, fontSize = 32.sp)
+		is HomeUIState.Success -> Column(
+			modifier = Modifier
+				.padding(12.dp)
+			/* .verticalScroll(rememberScrollState()) */
+		) {
+			Text(text = "HIDDEN PEARLS", fontWeight = FontWeight.Bold, fontSize = 32.sp)
 
-				LocationList(
-					heading = "Best Pearls",
-					locations = uiState.pearls,
-					onNavigateToDetails = onNavigateToDetails
-				)
-				LocationList(
-					heading = "Worst Traps",
-					locations = uiState.traps,
-					onNavigateToDetails = onNavigateToDetails
-				)
-			}
+			LocationList(
+				heading = "Best Pearls",
+				locations = uiState.pearls,
+				onNavigateToDetails = onNavigateToDetails
+			)
+			LocationList(
+				heading = "Worst Traps",
+				locations = uiState.traps,
+				onNavigateToDetails = onNavigateToDetails
+			)
+		}
+
 		is HomeUIState.Error -> ErrorScreen(uiState.error)
 	}
 }
@@ -83,23 +88,24 @@ fun ListView(
 	onNavigateToDetails: (id: Long) -> Unit,
 	modifier: Modifier = Modifier,
 ) {
-		val uiState = viewModel.uiState
+	val uiState = viewModel.uiState
 
-		when (uiState) {
-			is ListUIState.Loading -> LoadingScreen()
-			is ListUIState.Success -> Column (
-				modifier = Modifier
-					.padding(12.dp)
-					/* .verticalScroll(rememberScrollState()) */
-			) {
-				LocationList(
-					heading = "Locations",
-					locations = uiState.locations,
-					onNavigateToDetails = onNavigateToDetails
-				)
-			}
-			is ListUIState.Error -> ErrorScreen(uiState.error)
+	when (uiState) {
+		is ListUIState.Loading -> LoadingScreen()
+		is ListUIState.Success -> Column(
+			modifier = Modifier
+				.padding(12.dp)
+			/* .verticalScroll(rememberScrollState()) */
+		) {
+			LocationList(
+				heading = "Locations",
+				locations = uiState.locations,
+				onNavigateToDetails = onNavigateToDetails
+			)
 		}
+
+		is ListUIState.Error -> ErrorScreen(uiState.error)
+	}
 }
 
 @Composable
@@ -112,7 +118,7 @@ fun FavoritesView(
 
 	when (uiState) {
 		is ListUIState.Loading -> LoadingScreen()
-		is ListUIState.Success -> Column (
+		is ListUIState.Success -> Column(
 			modifier = Modifier
 				.padding(12.dp)
 			/* .verticalScroll(rememberScrollState()) */
@@ -123,6 +129,7 @@ fun FavoritesView(
 				onNavigateToDetails = onNavigateToDetails
 			)
 		}
+
 		is ListUIState.Error -> ErrorScreen(uiState.error)
 	}
 }
@@ -162,15 +169,15 @@ fun LocationList(
 	onNavigateToDetails: (id: Long) -> Unit,
 	modifier: Modifier = Modifier
 ) {
-	Column (
+	Column(
 		modifier = Modifier
-		.padding(12.dp)
+			.padding(12.dp)
 	) {
 		Text(text = heading, fontWeight = FontWeight.Bold, fontSize = 24.sp)
 		Spacer(modifier = Modifier.height(12.dp))
 		LazyColumn {
-			items(locations) {
-				location -> LocationCard(
+			items(locations) { location ->
+				LocationCard(
 					location = location,
 					onNavigateToDetails = onNavigateToDetails
 				)
@@ -184,55 +191,80 @@ fun LocationCard(
 	location: Location,
 	onNavigateToDetails: (id: Long) -> Unit
 ) {
-	Column (modifier = Modifier
-		.clickable { onNavigateToDetails(location.id) }
-		.fillMaxWidth()
-		.clip(shape = RoundedCornerShape(5.dp))
-		.padding(5.dp)
-		.clip(RoundedCornerShape(5.dp))
-		.background(
-			MaterialTheme.colorScheme.primary,
-			shape = RoundedCornerShape(5.dp)
-		)
-		.border(BorderStroke(3.dp, SolidColor(MaterialTheme.colorScheme.primary))),) {
+	Column(
+		modifier = Modifier
+			.clickable { onNavigateToDetails(location.id) }
+			.fillMaxWidth()
+			.clip(shape = RoundedCornerShape(5.dp))
+			.padding(5.dp)
+			.clip(RoundedCornerShape(5.dp))
+			.background(
+				MaterialTheme.colorScheme.primary,
+				shape = RoundedCornerShape(5.dp)
+			)
+			.border(BorderStroke(3.dp, SolidColor(MaterialTheme.colorScheme.primary))),
+	) {
 		Text(
 			text = location.name,
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
-				.padding(horizontal = 10.dp, vertical = 3.dp))
+				.padding(horizontal = 10.dp, vertical = 3.dp)
+		)
 		Text(
 			text = location.category.toString(),
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
-				.padding(horizontal = 10.dp, vertical = 3.dp))
+				.padding(horizontal = 10.dp, vertical = 3.dp)
+		)
 		Text(
 			text = location.description,
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
-				.padding(horizontal = 10.dp, vertical = 3.dp))
-		}
+				.padding(horizontal = 10.dp, vertical = 3.dp)
+		)
+	}
 }
 
 @Composable
 fun LocationDetails(location: Location) {
-	Column (modifier = Modifier
+	val coroutineScope = rememberCoroutineScope()
+
+	Column(
+		modifier = Modifier
 			.padding(12.dp)
 	) {
-		Text(text = location.name,
+		Text(
+			text = location.name,
 			fontWeight = FontWeight.Bold,
-			fontSize = 24.sp)
+			fontSize = 24.sp
+		)
 		Text(text = location.category.toString())
 		Text(text = location.description)
 		Text(text = Json.encodeToString(location))
-		if (FavoritesService.isFavorite(location.id)) {
+
+		val isFavorite = remember { mutableStateOf(false) }
+
+		LaunchedEffect(location.id) {
+			isFavorite.value = FavoritesService.isFavorite(location.id)
+		}
+
+		if (isFavorite.value) {
 			Button(onClick = {
-				FavoritesService.removeFromFavorites(location.id) })
+				coroutineScope.launch {
+					FavoritesService.removeFromFavorites(location.id)
+					isFavorite.value = false
+				}
+			})
 			{
 				Text(text = "Un-Favorite")
 			}
 		} else {
 			Button(onClick = {
-				FavoritesService.addToFavorites(location.id) })
+				coroutineScope.launch {
+					FavoritesService.addToFavorites(location.id)
+					isFavorite.value = true
+				}
+			})
 			{
 				Text(text = "Favorite")
 			}
@@ -246,8 +278,8 @@ fun LoadingScreen() {
 		modifier = Modifier
 			.height(100.dp)
 			.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-	){
+		contentAlignment = Alignment.Center
+	) {
 		/* Image( */
 		/* 	painter = painterResource(id = R.drawable.ic_splash), // Image source */
 		/* 	contentDescription = "Hidden Pearls Logo", */
