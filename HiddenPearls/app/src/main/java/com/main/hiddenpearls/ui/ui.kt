@@ -42,6 +42,7 @@ import com.main.hiddenpearls.viewModels.HomeUIState
 import com.main.hiddenpearls.viewModels.HomeViewModel
 import com.main.hiddenpearls.viewModels.ListUIState
 import com.main.hiddenpearls.viewModels.ListViewModel
+import com.main.hiddenpearls.viewModels.NameSearchViewModel
 import com.main.hiddenpearls.viewModels.RandomViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -81,6 +82,56 @@ fun HomeView(
 		is HomeUIState.Error -> ErrorScreen(uiState.error)
 	}
 }
+
+//tilraun til að fá forsíðuna til að skrolla rétt, items sækir ekki rétt eftir flokkum
+/*@Composable
+fun HomeView(
+	onNavigateToDetails: (id: Long) -> Unit,
+	modifier: Modifier = Modifier,
+	viewModel: HomeViewModel = viewModel(),
+	navController: NavHostController,
+) {
+	ShakeForPearl(navController)
+	val uiState = viewModel.uiState
+
+	when (uiState) {
+		is HomeUIState.Loading -> LoadingScreen()
+		is HomeUIState.Success -> Box {
+			LazyColumn(modifier = Modifier.padding(12.dp)) {
+				item {
+					Text(text = "HIDDEN PEARLS", fontWeight = FontWeight.Bold, fontSize = 32.sp)
+				}
+				item {
+					Spacer(modifier = Modifier.height(12.dp))
+				}
+				item {
+					Text(text = "Top Pearls", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+				}
+				items(uiState.pearls) { pearl ->
+					LocationCard(
+						location = pearl,
+						onNavigateToDetails = onNavigateToDetails
+					)
+				}
+				item {
+					Text(text = "Worst Traps", fontWeight = FontWeight.Bold, fontSize = 24.sp)
+				}
+				items(uiState.traps) { trap ->
+					LocationCard(
+						location = trap,
+						onNavigateToDetails = onNavigateToDetails
+					)
+				}
+				item {
+					Spacer(modifier = Modifier.height(100.dp))
+				}
+			}
+		}
+		is HomeUIState.Error -> ErrorScreen(uiState.error)
+	}
+}*/
+
+
 
 @Composable
 fun ListView(
@@ -163,6 +214,33 @@ fun RandomView(
 }
 
 @Composable
+fun NameSearchView(
+	onNavigateToDetails: (id: Long) -> Unit,
+	viewModel: NameSearchViewModel = viewModel(),
+	searchQuery: String,
+	modifier: Modifier = Modifier
+) {
+	val uiState = viewModel.uiState
+
+	when (uiState) {
+		is ListUIState.Loading -> LoadingScreen()
+		is ListUIState.Success -> Column(
+			modifier = Modifier
+				.padding(12.dp)
+			/* .verticalScroll(rememberScrollState()) */
+		) {
+			LocationList(
+				heading = "Search Results",
+				locations = uiState.locations,
+				onNavigateToDetails = onNavigateToDetails
+			)
+		}
+
+		is ListUIState.Error -> ErrorScreen(uiState.error)
+	}
+}
+
+@Composable
 fun LocationList(
 	heading: String,
 	locations: List<Location>,
@@ -182,6 +260,10 @@ fun LocationList(
 					onNavigateToDetails = onNavigateToDetails
 				)
 			}
+			// temp solution to clear the nav bar on Location list view, need to workshop
+			/*item {
+				Spacer(modifier = Modifier.height(100.dp))
+			}*/
 		}
 	}
 }

@@ -1,28 +1,16 @@
 package com.main.hiddenpearls.viewModels
 
-import androidx.annotation.RequiresPermission
-import android.location.Location as GPSLocation
-import android.Manifest
-import com.google.android.gms.location.LocationServices
-import androidx.compose.ui.platform.LocalContext
-
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
-import kotlinx.coroutines.launch
-
+import com.main.hiddenpearls.FavoritesService
 import com.main.hiddenpearls.Location
 import com.main.hiddenpearls.LocationCategory
 import com.main.hiddenpearls.LocationService
-import com.main.hiddenpearls.FavoritesService
+import kotlinx.coroutines.launch
 
 sealed interface HomeUIState {
 	data object Loading : HomeUIState
@@ -125,7 +113,7 @@ class FavoritesViewModel() : ViewModel() {
 class DetailsViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 	private val id = savedStateHandle.get<Long>("id")
 	var uiState: DetailsState by mutableStateOf(DetailsState.Loading)
-	private set
+		private set
 
 	init {
 		getData()
@@ -142,6 +130,32 @@ class DetailsViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 				}
 			} catch (e: Exception) {
 				DetailsState.Error(e.message)
+			}
+		}
+	}
+}
+
+class NameSearchViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
+	private val search = savedStateHandle.get<String>("searchQuery")
+
+	var uiState: ListUIState by mutableStateOf(ListUIState.Loading)
+		private set
+
+	init {
+		getData()
+	}
+
+	private fun getData() {
+		viewModelScope.launch {
+			uiState = try {
+				if (search == null) {
+					ListUIState.Error()
+				} else {
+					val locations = LocationService.searchByName(search)
+					ListUIState.Success(locations)
+				}
+			} catch (e: Exception) {
+				ListUIState.Error(e.message)
 			}
 		}
 	}

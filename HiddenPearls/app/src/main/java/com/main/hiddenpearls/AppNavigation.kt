@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +49,7 @@ import com.main.hiddenpearls.ui.DetailsView
 import com.main.hiddenpearls.ui.FavoritesView
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.ListView
-import com.main.hiddenpearls.ui.LocationList
+import com.main.hiddenpearls.ui.NameSearchView
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -137,12 +138,15 @@ fun AppNavHost(
 			val searchQuery = backStackEntry.arguments?.getString("searchQuery")
 
 			if (searchQuery != null) {
-				val searchResults = LocationService.searchByName(searchQuery)
+				val searchResults = remember { mutableStateOf<List<Location>>(listOf()) }
+				LaunchedEffect(searchQuery) {
+					searchResults.value = LocationService.searchByName(searchQuery)
+				}
+
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
-					LocationList(
-						heading = "Search Results",
-						locations = searchResults,
+					NameSearchView(
 						modifier = modifier.padding(innerPadding),
+						searchQuery = searchQuery,
 						onNavigateToDetails = onNavigateToDetails
 					)
 				}
@@ -204,7 +208,7 @@ fun NavBar(navController: NavHostController) {
 							.padding(3.dp)
 					)
 				}
-				// Favorites INPROGRESS
+				// Favorites
 				IconButton(onClick = { navController.navigate(Screen.Favorites.route) },
 					modifier = Modifier
 						.fillMaxSize()
