@@ -54,10 +54,6 @@ import com.main.hiddenpearls.ui.NameSearchView
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-/* enum class Screen { */
-/*     HOME, LOCATION_LIST, LOCATION_DETAILS */
-/* } */
-
 sealed class Screen(val route: String) {
 	data object Home : Screen("home")
 	data object Favorites : Screen("favorites")
@@ -85,9 +81,8 @@ fun AppNavHost(
 	) {
 
 		composable(Screen.Home.route) {
-			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+			Scaffold(bottomBar = { NavBar(navController) }) { _ ->
 				HomeView(
-					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails,
 					navController = navController,
 				)
@@ -96,16 +91,15 @@ fun AppNavHost(
 		}
 
 		composable(Screen.LocationList.route) {
-			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+			Scaffold(bottomBar = { NavBar(navController) }) { _ ->
 				ListView(
-					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
 			}
 		}
 
 		composable(Screen.Favorites.route) {
-			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+			Scaffold(bottomBar = { NavBar(navController) }) { _ ->
 				FavoritesView(
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
@@ -127,7 +121,7 @@ fun AppNavHost(
 		}
 
 		composable(
-			"NameSearch/{searchQuery}",
+			"${Screen.NameSearch.route}/{searchQuery}",
 			arguments = listOf(navArgument("searchQuery") { type = NavType.StringType })
 		) { backStackEntry ->
 			val searchQuery = backStackEntry.arguments?.getString("searchQuery")
@@ -138,7 +132,7 @@ fun AppNavHost(
 					searchResults.value = LocationService.searchByName(searchQuery)
 				}
 
-				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+				Scaffold(bottomBar = { NavBar(navController) }) { _ ->
 					NameSearchView(
 						modifier = modifier.padding(innerPadding),
 						onNavigateToDetails = onNavigateToDetails
@@ -147,10 +141,10 @@ fun AppNavHost(
 			}
 		}
 
-		composable("GPSSearch/{radius}",
+		composable("${Screen.GPSSearch.route}/{radius}",
 			arguments = listOf(navArgument("radius") { type = NavType.FloatType })
 		) {
-			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+			Scaffold(bottomBar = { NavBar(navController) }) { _ ->
 				GPSSearchView(
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
@@ -355,22 +349,6 @@ fun ShakeForPearl(navController: NavHostController) {
 		}
 	}
 }
-
-/*// Splash Screen
-@Composable
-fun SplashScreen(navController: NavHostController) {
-	Image(
-		painter = painterResource(id = R.drawable.ic_splash), // Image source
-		contentDescription = "Hidden Pearls Logo",
-		modifier = Modifier.fillMaxSize()
-	)
-
-	// Delay and navigate to the main screen
-	LaunchedEffect(key1 = true) {
-		delay(2000) // Adjust the delay as needed
-		navController.navigate("home")
-	}
-}*/
 
 // previews below
 @Preview
