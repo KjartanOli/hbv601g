@@ -57,7 +57,7 @@ object LocationService {
 	}
 
 	suspend fun searchByName(name: String) : List<Location> {
-		return client.get("search/name/$name").body()
+		return client.get("locations?name=$name").body()
 	}
 
 	fun searchByLocation(location: GPSLocation): List<Location> {
