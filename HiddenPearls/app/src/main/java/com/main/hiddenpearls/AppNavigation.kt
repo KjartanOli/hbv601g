@@ -75,7 +75,7 @@ fun AppNavHost(
 	startDestination: String = "home"
 ) {
 	val onNavigateToDetails = {
-		id: Long ->  navController.navigate("${Screen.Details.route}/$id")
+		id: Long -> navController.navigate("${Screen.Details.route}/$id")
 	}
 
 	NavHost(
@@ -107,6 +107,7 @@ fun AppNavHost(
 		composable(Screen.Favorites.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				FavoritesView(
+					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
 			}
@@ -120,8 +121,7 @@ fun AppNavHost(
 
 			if (id != null) {
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
-					DetailsView(
-					)
+					DetailsView(modifier = modifier.padding(innerPadding))
 				}
 			}
 		}
@@ -140,6 +140,7 @@ fun AppNavHost(
 
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 					NameSearchView(
+						modifier = modifier.padding(innerPadding),
 						onNavigateToDetails = onNavigateToDetails
 					)
 				}
@@ -151,6 +152,7 @@ fun AppNavHost(
 		) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				GPSSearchView(
+					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
 			}
@@ -253,7 +255,7 @@ fun NavBar(navController: NavHostController) {
 						onValueChange = { searchQuery = it },
 						label = { Text("Search for a pearl or trap...") }
 					)
-				   },
+			},
 			dismissButton = {
 				Button(onClick = { showNameSearchDialog.value = false }) {
 					Text("Cancel")

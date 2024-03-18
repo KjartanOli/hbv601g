@@ -60,15 +60,8 @@ object LocationService {
 		return client.get("locations?name=$name").body()
 	}
 
-	fun searchByLocation(location: GPSLocation): List<Location> {
-		return listOf(Location(
-			id = 0,
-			name = "Hafravatn",
-			description = "Overlooked lake near the capitol area",
-			category = LocationCategory.PEARL,
-			location = GPSLocation(""),
-			statistics = listOf<VisitStatistic>()
-		))
+	suspend fun searchByLocation(location: GPSLocation, radius: Double): List<Location> {
+		return client.get("locations?longitude=$location.longitude&latitude=$location.latitude&radius=$radius").body()
 	}
 
 	suspend fun random(): Location {

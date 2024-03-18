@@ -194,7 +194,11 @@ class RandomViewModel() : ViewModel() {
 	}
 }
 
-class GPSSearchViewModel(application: Application) : AndroidViewModel(application) {
+class GPSSearchViewModel(
+	application: Application,
+	savedStateHandle: SavedStateHandle
+) : AndroidViewModel(application) {
+	private val radius = savedStateHandle.get<Double>("radius")
 	var uiState: GPSState by mutableStateOf(GPSState.Loading)
 		private set
 	private val context = getApplication<Application>()
@@ -205,7 +209,7 @@ class GPSSearchViewModel(application: Application) : AndroidViewModel(applicatio
      //}
 
  	init {
-		 if (hasLocationPermission()) {
+		if (hasLocationPermission()) {
 			 if (ActivityCompat.checkSelfPermission(
 					 context,
 					 Manifest.permission.ACCESS_FINE_LOCATION
@@ -230,20 +234,27 @@ class GPSSearchViewModel(application: Application) : AndroidViewModel(applicatio
  		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
  	)
  	private fun getData() {
- 		viewModelScope.launch {
-			 if (hasLocationPermission()) {
-				 locationClient.lastLocation.addOnSuccessListener { location: GPSLocation? ->
-					 uiState = if (location == null) {
-						 GPSState.Error("Failed to get your current location")
-					 } else {
-						 val locations = LocationService.searchByLocation(location)
-						 GPSState.Success(locations)
-					 }
-				 }
-
-			 } else {
-				 uiState = GPSState.Error("Location permission not granted")
- 			}
+		if (radius == null) {
+			uiState = GPSState.Error()
+			return;
+		}
+		if (hasLocationPermission()) {
+			locationClient.lastLocation.addOnSuccessListener { location: GPSLocation? ->
+				if (location == null) {
+					uiState = GPSState.Error("Failed to get your current location")
+				} else {
+					viewModelScope.launch {
+						uiState = try {
+							val locations = LocationService.searchByLocation(location, radius)
+							GPSState.Success(locations)
+						} catch (e: Exception) {
+							GPSState.Error(e.message)
+						}
+					}
+				}
+			}
+		} else {
+			uiState = GPSState.Error("Location permission not granted")
  		}
  	}
 
