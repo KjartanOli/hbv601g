@@ -49,44 +49,7 @@ import com.main.hiddenpearls.viewModels.RandomViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-
 @Composable
-fun HomeView(
-	onNavigateToDetails: (id: Long) -> Unit,
-	modifier: Modifier = Modifier,
-	viewModel: HomeViewModel = viewModel(),
-	navController: NavHostController,
-) {
-	ShakeForPearl(navController)
-	val uiState = viewModel.uiState
-
-	when (uiState) {
-		is HomeUIState.Loading -> LoadingScreen()
-		is HomeUIState.Success -> Column(
-			modifier = Modifier
-				.padding(12.dp)
-			/* .verticalScroll(rememberScrollState()) */
-		) {
-			Text(text = "HIDDEN PEARLS", fontWeight = FontWeight.Bold, fontSize = 32.sp)
-
-			LocationList(
-				heading = "Best Pearls",
-				locations = uiState.pearls,
-				onNavigateToDetails = onNavigateToDetails
-			)
-			LocationList(
-				heading = "Worst Traps",
-				locations = uiState.traps,
-				onNavigateToDetails = onNavigateToDetails
-			)
-		}
-
-		is HomeUIState.Error -> ErrorScreen(uiState.error)
-	}
-}
-
-//tilraun til að fá forsíðuna til að skrolla rétt, items sækir ekki rétt eftir flokkum
-/*@Composable
 fun HomeView(
 	onNavigateToDetails: (id: Long) -> Unit,
 	modifier: Modifier = Modifier,
@@ -131,9 +94,7 @@ fun HomeView(
 		}
 		is HomeUIState.Error -> ErrorScreen(uiState.error)
 	}
-}*/
-
-
+}
 
 @Composable
 fun ListView(
@@ -148,7 +109,6 @@ fun ListView(
 		is ListUIState.Success -> Column(
 			modifier = Modifier
 				.padding(12.dp)
-			/* .verticalScroll(rememberScrollState()) */
 		) {
 			LocationList(
 				heading = "Locations",
@@ -164,8 +124,7 @@ fun ListView(
 @Composable
 fun FavoritesView(
 	onNavigateToDetails: (id: Long) -> Unit,
-	viewModel: FavoritesViewModel = viewModel(),
-	modifier: Modifier = Modifier
+	viewModel: FavoritesViewModel = viewModel()
 ) {
 	val uiState = viewModel.uiState
 
@@ -174,7 +133,6 @@ fun FavoritesView(
 		is ListUIState.Success -> Column(
 			modifier = Modifier
 				.padding(12.dp)
-			/* .verticalScroll(rememberScrollState()) */
 		) {
 			LocationList(
 				heading = "Favourites",
@@ -182,7 +140,6 @@ fun FavoritesView(
 				onNavigateToDetails = onNavigateToDetails
 			)
 		}
-
 		is ListUIState.Error -> ErrorScreen(uiState.error)
 	}
 }
@@ -190,7 +147,6 @@ fun FavoritesView(
 @Composable
 fun DetailsView(
 	viewModel: DetailsViewModel = viewModel(),
-	modifier: Modifier = Modifier
 ) {
 	val uiState = viewModel.uiState
 
@@ -204,7 +160,6 @@ fun DetailsView(
 @Composable
 fun RandomView(
 	viewModel: RandomViewModel = viewModel(),
-	modifier: Modifier = Modifier
 ) {
 	val uiState = viewModel.uiState
 
@@ -219,8 +174,6 @@ fun RandomView(
 fun NameSearchView(
 	onNavigateToDetails: (id: Long) -> Unit,
 	viewModel: NameSearchViewModel = viewModel(),
-	searchQuery: String,
-	modifier: Modifier = Modifier
 ) {
 	val uiState = viewModel.uiState
 
@@ -229,7 +182,6 @@ fun NameSearchView(
 		is ListUIState.Success -> Column(
 			modifier = Modifier
 				.padding(12.dp)
-			/* .verticalScroll(rememberScrollState()) */
 		) {
 			LocationList(
 				heading = "Search Results",
@@ -237,14 +189,12 @@ fun NameSearchView(
 				onNavigateToDetails = onNavigateToDetails
 			)
 		}
-
 		is ListUIState.Error -> ErrorScreen(uiState.error)
 	}
 }
 
 @Composable
 fun GPSSearchView(
-	modifier: Modifier = Modifier,
 	onNavigateToDetails: (id: Long) -> Unit,
 	viewModel: GPSSearchViewModel = viewModel()
 ) {
@@ -263,7 +213,6 @@ fun GPSSearchView(
 				onNavigateToDetails = onNavigateToDetails
 			)
 		}
-
 		is GPSState.Error -> ErrorScreen(uiState.error)
 	}
 }
@@ -273,7 +222,6 @@ fun LocationList(
 	heading: String,
 	locations: List<Location>,
 	onNavigateToDetails: (id: Long) -> Unit,
-	modifier: Modifier = Modifier
 ) {
 	Column(
 		modifier = Modifier
@@ -288,10 +236,9 @@ fun LocationList(
 					onNavigateToDetails = onNavigateToDetails
 				)
 			}
-			// temp solution to clear the nav bar on Location list view, need to workshop
-			/*item {
+			item {
 				Spacer(modifier = Modifier.height(100.dp))
-			}*/
+			}
 		}
 	}
 }
@@ -390,18 +337,12 @@ fun LoadingScreen() {
 			.fillMaxWidth(),
 		contentAlignment = Alignment.Center
 	) {
-		/* Image( */
-		/* 	painter = painterResource(id = R.drawable.ic_splash), // Image source */
-		/* 	contentDescription = "Hidden Pearls Logo", */
-		/* 	modifier = Modifier.fillMaxSize() */
-		/* ) */
 		CircularProgressIndicator(
 			modifier = Modifier.width(64.dp),
 			color = MaterialTheme.colorScheme.secondary,
 			trackColor = MaterialTheme.colorScheme.surfaceVariant,
 		)
 	}
-	/* Text(text = "Loading…") */
 }
 
 @Composable

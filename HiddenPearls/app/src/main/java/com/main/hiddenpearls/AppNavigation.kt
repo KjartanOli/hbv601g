@@ -84,10 +84,6 @@ fun AppNavHost(
 		startDestination = startDestination
 	) {
 
-		/*composable("splash_screen") {
-			SplashScreen(navController = navController)
-		}*/
-
 		composable(Screen.Home.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				HomeView(
@@ -111,7 +107,6 @@ fun AppNavHost(
 		composable(Screen.Favorites.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				FavoritesView(
-					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
 			}
@@ -126,7 +121,6 @@ fun AppNavHost(
 			if (id != null) {
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 					DetailsView(
-						modifier = modifier.padding(innerPadding)
 					)
 				}
 			}
@@ -146,8 +140,6 @@ fun AppNavHost(
 
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 					NameSearchView(
-						modifier = modifier.padding(innerPadding),
-						searchQuery = searchQuery,
 						onNavigateToDetails = onNavigateToDetails
 					)
 				}
@@ -159,7 +151,6 @@ fun AppNavHost(
 		) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				GPSSearchView(
-					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
 			}
@@ -169,8 +160,6 @@ fun AppNavHost(
 
 @Composable
 fun NavBar(navController: NavHostController) {
-
-
 	val showNameSearchDialog = remember { mutableStateOf(false) }
 	val showGPSSearchDialog = remember { mutableStateOf(false) }
 
