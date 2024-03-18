@@ -52,14 +52,11 @@ import kotlinx.serialization.json.Json
 @Composable
 fun HomeView(
 	onNavigateToDetails: (id: Long) -> Unit,
-	modifier: Modifier = Modifier,
 	viewModel: HomeViewModel = viewModel(),
 	navController: NavHostController,
 ) {
 	ShakeForPearl(navController)
-	val uiState = viewModel.uiState
-
-	when (uiState) {
+	when (val uiState = viewModel.uiState) {
 		is HomeUIState.Loading -> LoadingScreen()
 		is HomeUIState.Success -> Box {
 			LazyColumn(modifier = Modifier.padding(12.dp)) {
@@ -100,11 +97,8 @@ fun HomeView(
 fun ListView(
 	viewModel: ListViewModel = viewModel(),
 	onNavigateToDetails: (id: Long) -> Unit,
-	modifier: Modifier = Modifier,
 ) {
-	val uiState = viewModel.uiState
-
-	when (uiState) {
+	when (val uiState = viewModel.uiState) {
 		is ListUIState.Loading -> LoadingScreen()
 		is ListUIState.Success -> Column(
 			modifier = Modifier
@@ -126,9 +120,7 @@ fun FavoritesView(
 	onNavigateToDetails: (id: Long) -> Unit,
 	viewModel: FavoritesViewModel = viewModel()
 ) {
-	val uiState = viewModel.uiState
-
-	when (uiState) {
+	when (val uiState = viewModel.uiState) {
 		is ListUIState.Loading -> LoadingScreen()
 		is ListUIState.Success -> Column(
 			modifier = Modifier
@@ -148,9 +140,7 @@ fun FavoritesView(
 fun DetailsView(
 	viewModel: DetailsViewModel = viewModel(),
 ) {
-	val uiState = viewModel.uiState
-
-	when (uiState) {
+	when (val uiState = viewModel.uiState) {
 		is DetailsState.Loading -> LoadingScreen()
 		is DetailsState.Success -> LocationDetails(uiState.location)
 		is DetailsState.Error -> ErrorScreen(uiState.error)
@@ -161,9 +151,7 @@ fun DetailsView(
 fun RandomView(
 	viewModel: RandomViewModel = viewModel(),
 ) {
-	val uiState = viewModel.uiState
-
-	when (uiState) {
+	when (val uiState = viewModel.uiState) {
 		is DetailsState.Loading -> LoadingScreen()
 		is DetailsState.Success -> LocationDetails(uiState.location)
 		is DetailsState.Error -> ErrorScreen(uiState.error)
@@ -175,9 +163,7 @@ fun NameSearchView(
 	onNavigateToDetails: (id: Long) -> Unit,
 	viewModel: NameSearchViewModel = viewModel(),
 ) {
-	val uiState = viewModel.uiState
-
-	when (uiState) {
+	when (val uiState = viewModel.uiState) {
 		is ListUIState.Loading -> LoadingScreen()
 		is ListUIState.Success -> Column(
 			modifier = Modifier
@@ -198,9 +184,7 @@ fun GPSSearchView(
 	onNavigateToDetails: (id: Long) -> Unit,
 	viewModel: GPSSearchViewModel = viewModel()
 ) {
-	val uiState = viewModel.uiState
-
-	when (uiState) {
+	when (val uiState = viewModel.uiState) {
 		is GPSState.Loading -> LoadingScreen()
 		is GPSState.Success -> Column(
 			modifier = Modifier
