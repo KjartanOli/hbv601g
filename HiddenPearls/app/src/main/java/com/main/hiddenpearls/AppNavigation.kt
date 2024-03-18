@@ -81,7 +81,7 @@ fun AppNavHost(
 	) {
 
 		composable(Screen.Home.route) {
-			Scaffold(bottomBar = { NavBar(navController) }) { _ ->
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				HomeView(
 					onNavigateToDetails = onNavigateToDetails,
 					navController = navController,
@@ -91,7 +91,7 @@ fun AppNavHost(
 		}
 
 		composable(Screen.LocationList.route) {
-			Scaffold(bottomBar = { NavBar(navController) }) { _ ->
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				ListView(
 					onNavigateToDetails = onNavigateToDetails
 				)
@@ -99,7 +99,7 @@ fun AppNavHost(
 		}
 
 		composable(Screen.Favorites.route) {
-			Scaffold(bottomBar = { NavBar(navController) }) { _ ->
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				FavoritesView(
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
@@ -132,7 +132,7 @@ fun AppNavHost(
 					searchResults.value = LocationService.searchByName(searchQuery)
 				}
 
-				Scaffold(bottomBar = { NavBar(navController) }) { _ ->
+				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 					NameSearchView(
 						modifier = modifier.padding(innerPadding),
 						onNavigateToDetails = onNavigateToDetails
@@ -144,7 +144,7 @@ fun AppNavHost(
 		composable("${Screen.GPSSearch.route}/{radius}",
 			arguments = listOf(navArgument("radius") { type = NavType.FloatType })
 		) {
-			Scaffold(bottomBar = { NavBar(navController) }) { _ ->
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				GPSSearchView(
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
