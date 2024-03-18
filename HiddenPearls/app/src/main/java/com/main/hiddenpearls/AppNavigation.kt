@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.main.hiddenpearls.ui.DetailsView
 import com.main.hiddenpearls.ui.FavoritesView
+import com.main.hiddenpearls.ui.GPSSearchView
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.ListView
 import com.main.hiddenpearls.ui.NameSearchView
@@ -150,6 +151,17 @@ fun AppNavHost(
 						onNavigateToDetails = onNavigateToDetails
 					)
 				}
+			}
+		}
+
+		composable("GPSSearch/{radius}",
+			arguments = listOf(navArgument("radius") { type = NavType.FloatType })
+		) {
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+				GPSSearchView(
+					modifier = modifier.padding(innerPadding),
+					onNavigateToDetails = onNavigateToDetails
+				)
 			}
 		}
 	}
@@ -275,20 +287,21 @@ fun NavBar(navController: NavHostController) {
 	}
 	// Dialog for GPSSearch
 	if (showGPSSearchDialog.value) {
+		var radius by remember { mutableFloatStateOf(0f) }
+
 		AlertDialog(
 			onDismissRequest = { showGPSSearchDialog.value = false },
 			title = { Text("Radius Search") },
 			text = {
 				// State for the text field
-				var searchDistance by remember { mutableFloatStateOf(0f) }
 
 				Column {
-					Text(text = "Search radius: ${searchDistance.toInt()} km",
+					Text(text = "Search radius: ${radius.toInt()} km",
 						modifier = Modifier
 						.padding(5.dp))
 					Slider(
-						value = searchDistance,
-						onValueChange = { searchDistance = it },
+						value = radius,
+						onValueChange = { radius = it },
 						valueRange = 0f..100f
 					)
 				}
@@ -299,7 +312,9 @@ fun NavBar(navController: NavHostController) {
 				}
 			},
 			confirmButton = {
-				Button(onClick = { showGPSSearchDialog.value = false
+				Button(onClick = {
+					showGPSSearchDialog.value = false
+					navController.navigate("GPSSearch/$radius")
 					// use search results here, stored in 'dist'
 				}) {
 					Text("Search")

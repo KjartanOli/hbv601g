@@ -1,11 +1,24 @@
 package com.main.hiddenpearls.viewModels
 
+import android.location.Location as GPSLocation
+import android.content.pm.PackageManager
+import androidx.annotation.RequiresPermission
+import android.Manifest
+import android.app.Application
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.main.hiddenpearls.FavoritesService
 import com.main.hiddenpearls.Location
 import com.main.hiddenpearls.LocationCategory
@@ -181,30 +194,66 @@ class RandomViewModel() : ViewModel() {
 	}
 }
 
-/* class GPSSearchViewModel() : ViewModel() { */
-/* 	var uiState: GPSState by mutableStateOf(GPSState.Loading) */
-/* 	private set */
-/* 	val context = LocalContext.current */
-/* 	val locationClient = remember { */
-/*         LocationServices.getFusedLocationProviderClient(context) */
-/*     } */
+class GPSSearchViewModel(application: Application) : AndroidViewModel(application) {
+	var uiState: GPSState by mutableStateOf(GPSState.Loading)
+		private set
+	private val context = getApplication<Application>()
 
-/* 	init { */
-/* 		getData() */
-/* 	} */
+	private val locationClient = LocationServices.getFusedLocationProviderClient(context)
+ 	//val locationClient = remember {
+        //LocationServices.getFusedLocationProviderClient(context)
+     //}
 
-/* 	@RequiresPermission( */
-/* 		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION], */
-/* 	) */
-/* 	private fun getData() { */
-/* 		viewModelScope.launch { */
-/* 			val location = locationClient.lastLocation.await() */
-/* 			if (location == null) { */
-/* 				GPSState.Error("Failed to get your current location") */
-/* 			} else { */
-/* 				val locations = LocationService.searchByLocation(location) */
-/* 				GPSState.Success(locations) */
-/* 			} */
-/* 		} */
-/* 	} */
-/* } */
+ 	init {
+		 if (hasLocationPermission()) {
+			 if (ActivityCompat.checkSelfPermission(
+					 context,
+					 Manifest.permission.ACCESS_FINE_LOCATION
+				 ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+					 context,
+					 Manifest.permission.ACCESS_COARSE_LOCATION
+				 ) != PackageManager.PERMISSION_GRANTED
+			 ) {
+				 // TODO: Consider calling
+				 //    ActivityCompat#requestPermissions
+				 // here to request the missing permissions, and then overriding
+				 //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+				 //                                          int[] grantResults)
+				 // to handle the case where the user grants the permission. See the documentation
+				 // for ActivityCompat#requestPermissions for more details.
+				 getData()
+			 }
+		 }
+	}
+
+ 	@RequiresPermission(
+ 		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
+ 	)
+ 	private fun getData() {
+ 		viewModelScope.launch {
+			 if (hasLocationPermission()) {
+				 locationClient.lastLocation.addOnSuccessListener { location: GPSLocation? ->
+					 uiState = if (location == null) {
+						 GPSState.Error("Failed to get your current location")
+					 } else {
+						 val locations = LocationService.searchByLocation(location)
+						 GPSState.Success(locations)
+					 }
+				 }
+
+			 } else {
+				 uiState = GPSState.Error("Location permission not granted")
+ 			}
+ 		}
+ 	}
+
+	private fun hasLocationPermission(): Boolean {
+		return ContextCompat.checkSelfPermission(
+			context,
+			Manifest.permission.ACCESS_FINE_LOCATION
+		) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+			context,
+			Manifest.permission.ACCESS_COARSE_LOCATION
+		) == PackageManager.PERMISSION_GRANTED
+	}
+}

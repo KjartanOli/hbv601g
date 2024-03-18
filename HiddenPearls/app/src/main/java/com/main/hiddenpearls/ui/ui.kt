@@ -38,6 +38,8 @@ import com.main.hiddenpearls.ShakeForPearl
 import com.main.hiddenpearls.viewModels.DetailsState
 import com.main.hiddenpearls.viewModels.DetailsViewModel
 import com.main.hiddenpearls.viewModels.FavoritesViewModel
+import com.main.hiddenpearls.viewModels.GPSSearchViewModel
+import com.main.hiddenpearls.viewModels.GPSState
 import com.main.hiddenpearls.viewModels.HomeUIState
 import com.main.hiddenpearls.viewModels.HomeViewModel
 import com.main.hiddenpearls.viewModels.ListUIState
@@ -237,6 +239,32 @@ fun NameSearchView(
 		}
 
 		is ListUIState.Error -> ErrorScreen(uiState.error)
+	}
+}
+
+@Composable
+fun GPSSearchView(
+	modifier: Modifier = Modifier,
+	onNavigateToDetails: (id: Long) -> Unit,
+	viewModel: GPSSearchViewModel = viewModel()
+) {
+	val uiState = viewModel.uiState
+
+	when (uiState) {
+		is GPSState.Loading -> LoadingScreen()
+		is GPSState.Success -> Column(
+			modifier = Modifier
+				.padding(12.dp)
+			/* .verticalScroll(rememberScrollState()) */
+		) {
+			LocationList(
+				heading = "Search Results",
+				locations = uiState.locations,
+				onNavigateToDetails = onNavigateToDetails
+			)
+		}
+
+		is GPSState.Error -> ErrorScreen(uiState.error)
 	}
 }
 
