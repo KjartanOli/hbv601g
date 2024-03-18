@@ -261,7 +261,7 @@ fun NavBar(navController: NavHostController) {
 					// if no text is entered, dialog is closed on pressing search
 					if ( searchQuery.isNotEmpty()) {
 						// Pass the search query to the route
-						navController.navigate("NameSearch/$searchQuery")
+						navController.navigate("${Screen.NameSearch.route}/$searchQuery")
 					}
 
 				}) {
@@ -299,7 +299,7 @@ fun NavBar(navController: NavHostController) {
 			confirmButton = {
 				Button(onClick = {
 					showGPSSearchDialog.value = false
-					navController.navigate("GPSSearch/$radius")
+					navController.navigate("${Screen.GPSSearch.route}/$radius")
 					// use search results here, stored in 'dist'
 				}) {
 					Text("Search")
