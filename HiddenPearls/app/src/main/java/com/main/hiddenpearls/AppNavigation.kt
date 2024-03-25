@@ -167,8 +167,6 @@ fun AppNavHost(
 @Composable
 fun NavBar(navController: NavHostController) {
 	val showNameSearchDialog = remember { mutableStateOf(false) }
-	val showGPSSearchDialog = remember { mutableStateOf(false) }
-	val showPermissionNeededDialog = remember { mutableStateOf(false) }
 	val locationCheck = remember { mutableStateOf(false) }
 
 	BottomAppBar(
@@ -285,8 +283,6 @@ fun NavBar(navController: NavHostController) {
 	// Dialog for GPSSearch
 	if (locationCheck.value) {
 		LocationPermissionHandler(
-			showGPSSearchDialog = showGPSSearchDialog,
-			showPermissionNeededDialog = showPermissionNeededDialog,
 			locationCheck = locationCheck,
 			navController = navController
 		)
@@ -297,8 +293,6 @@ fun NavBar(navController: NavHostController) {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LocationPermissionHandler(
-	showGPSSearchDialog: MutableState<Boolean>,
-	showPermissionNeededDialog: MutableState<Boolean>,
 	locationCheck: MutableState<Boolean>,
 	navController: NavHostController
 ) {
@@ -306,11 +300,9 @@ fun LocationPermissionHandler(
 
 	if (locationPermissionState.status.isGranted) {
 		GPSSearchDialog(
-			showGPSSearchDialog,
 			locationCheck,
 			locationPermissionState,
-			navController,
-			showPermissionNeededDialog
+			navController
 		)
 	} else {
 		LaunchedEffect(locationCheck.value) {
@@ -318,14 +310,12 @@ fun LocationPermissionHandler(
 		}
 		if (locationPermissionState.status.isGranted) {
 			GPSSearchDialog(
-				showGPSSearchDialog,
 				locationCheck,
 				locationPermissionState,
-				navController,
-				showPermissionNeededDialog
+				navController
 			)
 		} else {
-			PermissionNeededDialog(showPermissionNeededDialog, locationCheck)
+			PermissionNeededDialog(locationCheck)
 		}
 	}
 
@@ -334,17 +324,14 @@ fun LocationPermissionHandler(
 @Composable
 @OptIn(ExperimentalPermissionsApi::class)
 private fun GPSSearchDialog(
-	showGPSSearchDialog: MutableState<Boolean>,
 	locationCheck: MutableState<Boolean>,
 	locationPermissionState: PermissionState,
 	navController: NavHostController,
-	showPermissionNeededDialog: MutableState<Boolean>
 ) {
 	var radius by remember { mutableStateOf(0f) }
 
 	AlertDialog(
 		onDismissRequest = {
-			showGPSSearchDialog.value = false
 			locationCheck.value = false
 		},
 		title = { Text("Radius Search") },
@@ -363,7 +350,6 @@ private fun GPSSearchDialog(
 		},
 		dismissButton = {
 			Button(onClick = {
-				showGPSSearchDialog.value = false
 				locationCheck.value = false
 			}) {
 				Text("Cancel")
@@ -372,12 +358,10 @@ private fun GPSSearchDialog(
 		confirmButton = {
 			Button(onClick = {
 				if (locationPermissionState.status.isGranted) {
-					showGPSSearchDialog.value = false
 					locationCheck.value = false
 					navController.navigate("${Screen.GPSSearch.route}/$radius")
 				} else {
 					// Inform the user that the permission is needed
-					showPermissionNeededDialog.value = true
 				}
 			}) {
 				Text("Search")
@@ -388,19 +372,16 @@ private fun GPSSearchDialog(
 
 @Composable
 private fun PermissionNeededDialog(
-	showPermissionNeededDialog: MutableState<Boolean>,
 	locationCheck: MutableState<Boolean>
 ) {
 	AlertDialog(
 		onDismissRequest = {
-			showPermissionNeededDialog.value = false
 			locationCheck.value = false
 		},
 		title = { Text("Permission Needed") },
 		text = { Text("Location permission is needed to use GPS Search. Please enable it in your device settings.") },
 		confirmButton = {
 			Button(onClick = {
-				showPermissionNeededDialog.value = false
 				locationCheck.value = false
 			}) {
 				Text("OK")
