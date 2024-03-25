@@ -8,7 +8,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,7 +20,6 @@ import com.main.hiddenpearls.LocationCategory
 import com.main.hiddenpearls.LocationService
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
-import android.location.Location as GPSLocation
 
 sealed interface HomeUIState {
 	data object Loading : HomeUIState
@@ -204,8 +202,6 @@ class GPSSearchViewModelFactory(
 	}
 }
 
-
-
 class GPSSearchViewModel(
 	application: Application,
 	private val radius: Double
@@ -217,70 +213,57 @@ class GPSSearchViewModel(
 	private val locationClient: FusedLocationProviderClient by lazy {
 		LocationServices.getFusedLocationProviderClient(context.get()!!)
 	}
+	private var permission = false
 
  	init {
-		if (hasLocationPermission()) {
-			 if (context.get()?.let {
-					 ActivityCompat.checkSelfPermission(
-						 it,
-						 Manifest.permission.ACCESS_FINE_LOCATION
-					 )
-				 } != PackageManager.PERMISSION_GRANTED && context.get()?.let {
-					 ActivityCompat.checkSelfPermission(
-						 it,
-						 Manifest.permission.ACCESS_COARSE_LOCATION
-					 )
-				 } != PackageManager.PERMISSION_GRANTED
-			 ) {
-				 // TODO: Consider calling
-				 //    ActivityCompat#requestPermissions
-				 // here to request the missing permissions, and then overriding
-				 //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-				 //                                          int[] grantResults)
-				 // to handle the case where the user grants the permission. See the documentation
-				 // for ActivityCompat#requestPermissions for more details.
-				 getData()
-			 }
+		 if (context.get()?.let {
+				 ActivityCompat.checkSelfPermission(
+					 it,
+					 Manifest.permission.ACCESS_FINE_LOCATION
+				 )
+			 } == PackageManager.PERMISSION_GRANTED && context.get()?.let {
+				 ActivityCompat.checkSelfPermission(
+					 it,
+					 Manifest.permission.ACCESS_COARSE_LOCATION
+				 )
+			 } == PackageManager.PERMISSION_GRANTED
+		 ) {
+			 permission = true
+			 getData()
 		 }
-	}
+	 }
 
- 	@RequiresPermission(
- 		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
- 	)
- 	private fun getData() {
+
+	@RequiresPermission(
+		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
+	)
+	private fun getData() {
 		if (radius == null) {
-			uiState = GPSState.Error()
-			return;
+			uiState = GPSState.Error("Radius not set")
+			return
 		}
-		if (hasLocationPermission()) {
-			locationClient.lastLocation.addOnSuccessListener { location: GPSLocation? ->
-				if (location == null) {
-					uiState = GPSState.Error("Failed to get your current location")
-				} else {
+
+		if (permission) {
+			locationClient.lastLocation.addOnSuccessListener { location: android.location.Location? ->
+				if (location != null) {
 					viewModelScope.launch {
 						uiState = try {
 							val locations = LocationService.searchByLocation(location, radius)
 							GPSState.Success(locations)
 						} catch (e: Exception) {
-							GPSState.Error(e.message)
+							GPSState.Error(e.message ?: "Unknown error")
 						}
 					}
+				} else {
+					uiState = GPSState.Error("Failed to get your current location")
 				}
+			}.addOnFailureListener { exception ->
+				// Handle the failure here
+				uiState = GPSState.Error(exception.message ?: "Unknown error")
 			}
 		} else {
 			uiState = GPSState.Error("Location permission not granted")
- 		}
- 	}
+		}
 
-	private fun hasLocationPermission(): Boolean {
-		return context.get()?.let {
-			ContextCompat.checkSelfPermission(
-				it,
-				Manifest.permission.ACCESS_FINE_LOCATION
-			)
-		} == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-			context.get()!!,
-			Manifest.permission.ACCESS_COARSE_LOCATION
-		) == PackageManager.PERMISSION_GRANTED
 	}
 }
