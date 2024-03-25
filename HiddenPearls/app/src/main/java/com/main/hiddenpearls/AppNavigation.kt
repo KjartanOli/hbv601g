@@ -144,10 +144,13 @@ fun AppNavHost(
 		composable("${Screen.GPSSearch.route}/{radius}",
 			arguments = listOf(navArgument("radius") { type = NavType.FloatType })
 		) {
+			backStackEntry ->
+			val radius = backStackEntry.arguments?.getFloat("radius")?.toDouble() ?: 0.0
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				GPSSearchView(
 					modifier = modifier.padding(innerPadding),
-					onNavigateToDetails = onNavigateToDetails
+					onNavigateToDetails = onNavigateToDetails,
+					radius = radius
 				)
 			}
 		}

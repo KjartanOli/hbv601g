@@ -1,5 +1,6 @@
 package com.main.hiddenpearls.ui
 
+import android.app.Application
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,7 @@ import com.main.hiddenpearls.viewModels.DetailsState
 import com.main.hiddenpearls.viewModels.DetailsViewModel
 import com.main.hiddenpearls.viewModels.FavoritesViewModel
 import com.main.hiddenpearls.viewModels.GPSSearchViewModel
+import com.main.hiddenpearls.viewModels.GPSSearchViewModelFactory
 import com.main.hiddenpearls.viewModels.GPSState
 import com.main.hiddenpearls.viewModels.HomeUIState
 import com.main.hiddenpearls.viewModels.HomeViewModel
@@ -49,6 +52,7 @@ import com.main.hiddenpearls.viewModels.RandomViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+
 @Composable
 fun HomeView(
 	modifier: Modifier = Modifier,
@@ -189,8 +193,13 @@ fun NameSearchView(
 fun GPSSearchView(
 	modifier: Modifier = Modifier,
 	onNavigateToDetails: (id: Long) -> Unit,
-	viewModel: GPSSearchViewModel = viewModel()
+	radius: Double
 ) {
+	val context = LocalContext.current
+	val application = context.applicationContext as Application
+	val factory = GPSSearchViewModelFactory(application, radius)
+	val viewModel: GPSSearchViewModel = viewModel(factory = factory)
+
 	when (val uiState = viewModel.uiState) {
 		is GPSState.Loading -> LoadingScreen()
 		is GPSState.Success -> Column(
@@ -207,6 +216,8 @@ fun GPSSearchView(
 		is GPSState.Error -> ErrorScreen(uiState.error)
 	}
 }
+
+
 
 @Composable
 fun LocationList(

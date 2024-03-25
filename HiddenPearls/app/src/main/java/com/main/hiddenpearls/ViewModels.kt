@@ -1,29 +1,27 @@
 package com.main.hiddenpearls.viewModels
 
-import android.location.Location as GPSLocation
-import android.content.pm.PackageManager
-import androidx.annotation.RequiresPermission
 import android.Manifest
 import android.app.Application
-import android.content.Context
+import android.content.pm.PackageManager
+import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.main.hiddenpearls.FavoritesService
 import com.main.hiddenpearls.Location
 import com.main.hiddenpearls.LocationCategory
 import com.main.hiddenpearls.LocationService
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
+import android.location.Location as GPSLocation
 
 sealed interface HomeUIState {
 	data object Loading : HomeUIState
@@ -194,29 +192,45 @@ class RandomViewModel() : ViewModel() {
 	}
 }
 
+class GPSSearchViewModelFactory(
+	private val application: Application,
+	private val radius: Double
+) : ViewModelProvider.Factory {
+	override fun <T : ViewModel> create(modelClass: Class<T>): T {
+		if (modelClass.isAssignableFrom(GPSSearchViewModel::class.java)) {
+			return GPSSearchViewModel(application, radius) as T
+		}
+		throw IllegalArgumentException("Unknown ViewModel class")
+	}
+}
+
+
+
 class GPSSearchViewModel(
 	application: Application,
-	savedStateHandle: SavedStateHandle
-) : AndroidViewModel(application) {
-	private val radius = savedStateHandle.get<Double>("radius")
+	private val radius: Double
+) : ViewModel() {
 	var uiState: GPSState by mutableStateOf(GPSState.Loading)
 		private set
-	private val context = getApplication<Application>()
+	private val context: WeakReference<Application> = WeakReference(application)
 
-	private val locationClient = LocationServices.getFusedLocationProviderClient(context)
- 	//val locationClient = remember {
-        //LocationServices.getFusedLocationProviderClient(context)
-     //}
+	private val locationClient: FusedLocationProviderClient by lazy {
+		LocationServices.getFusedLocationProviderClient(context.get()!!)
+	}
 
  	init {
 		if (hasLocationPermission()) {
-			 if (ActivityCompat.checkSelfPermission(
-					 context,
-					 Manifest.permission.ACCESS_FINE_LOCATION
-				 ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-					 context,
-					 Manifest.permission.ACCESS_COARSE_LOCATION
-				 ) != PackageManager.PERMISSION_GRANTED
+			 if (context.get()?.let {
+					 ActivityCompat.checkSelfPermission(
+						 it,
+						 Manifest.permission.ACCESS_FINE_LOCATION
+					 )
+				 } != PackageManager.PERMISSION_GRANTED && context.get()?.let {
+					 ActivityCompat.checkSelfPermission(
+						 it,
+						 Manifest.permission.ACCESS_COARSE_LOCATION
+					 )
+				 } != PackageManager.PERMISSION_GRANTED
 			 ) {
 				 // TODO: Consider calling
 				 //    ActivityCompat#requestPermissions
@@ -259,11 +273,13 @@ class GPSSearchViewModel(
  	}
 
 	private fun hasLocationPermission(): Boolean {
-		return ContextCompat.checkSelfPermission(
-			context,
-			Manifest.permission.ACCESS_FINE_LOCATION
-		) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-			context,
+		return context.get()?.let {
+			ContextCompat.checkSelfPermission(
+				it,
+				Manifest.permission.ACCESS_FINE_LOCATION
+			)
+		} == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+			context.get()!!,
 			Manifest.permission.ACCESS_COARSE_LOCATION
 		) == PackageManager.PERMISSION_GRANTED
 	}
