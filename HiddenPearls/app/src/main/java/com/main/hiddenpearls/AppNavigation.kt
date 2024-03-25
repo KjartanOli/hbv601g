@@ -294,7 +294,7 @@ fun NavBar(navController: NavHostController) {
 }
 
 
-@kotlin.OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LocationPermissionHandler(
 	showGPSSearchDialog: MutableState<Boolean>,
