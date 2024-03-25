@@ -85,6 +85,7 @@ fun AppNavHost(
 				HomeView(
 					onNavigateToDetails = onNavigateToDetails,
 					navController = navController,
+					modifier = Modifier.padding(innerPadding)
 				)
 			}
 
@@ -93,7 +94,8 @@ fun AppNavHost(
 		composable(Screen.LocationList.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				ListView(
-					onNavigateToDetails = onNavigateToDetails
+					onNavigateToDetails = onNavigateToDetails,
+					modifier = Modifier.padding(innerPadding)
 				)
 			}
 		}
