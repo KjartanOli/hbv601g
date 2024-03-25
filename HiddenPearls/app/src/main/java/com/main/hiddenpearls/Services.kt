@@ -61,7 +61,7 @@ object LocationService {
 	}
 
 	suspend fun searchByLocation(location: GPSLocation, radius: Double): List<Location> {
-		return client.get("locations?longitude=$location.longitude&latitude=$location.latitude&radius=$radius").body()
+		return client.get("locations?longitude=${location.longitude}&latitude=${location.latitude}&radius=$radius").body()
 	}
 
 	suspend fun random(): Location {
