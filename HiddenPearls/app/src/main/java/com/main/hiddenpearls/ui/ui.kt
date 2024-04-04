@@ -2,6 +2,7 @@ package com.main.hiddenpearls.ui
 
 import android.app.Application
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,8 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +42,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.main.hiddenpearls.FavoritesService
 import com.main.hiddenpearls.Location
+import com.main.hiddenpearls.LocationCategory
+import com.main.hiddenpearls.R
 import com.main.hiddenpearls.ShakeForPearl
 import com.main.hiddenpearls.viewModels.DetailsState
 import com.main.hiddenpearls.viewModels.DetailsViewModel
@@ -50,8 +58,6 @@ import com.main.hiddenpearls.viewModels.ListViewModel
 import com.main.hiddenpearls.viewModels.NameSearchViewModel
 import com.main.hiddenpearls.viewModels.RandomViewModel
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 @Composable
 fun HomeView(
@@ -65,6 +71,20 @@ fun HomeView(
 		is HomeUIState.Loading -> LoadingScreen()
 		is HomeUIState.Success -> Box {
 			LazyColumn(modifier = Modifier.padding(12.dp)) {
+				item {
+					Image(painter = painterResource(id = R.drawable.home),
+						contentDescription = "Beautiful Icelandic landscape",
+						modifier = Modifier
+							.fillMaxWidth()
+							.clip(shape = RoundedCornerShape(5.dp))
+							.padding(5.dp)
+							.clip(RoundedCornerShape(5.dp))
+							.background(
+								MaterialTheme.colorScheme.primary,
+								shape = RoundedCornerShape(5.dp)
+							)
+					)
+				}
 				item {
 					Text(text = "HIDDEN PEARLS", fontWeight = FontWeight.Bold, fontSize = 32.sp)
 				}
@@ -134,7 +154,7 @@ fun FavoritesView(
 				.padding(12.dp)
 		) {
 			LocationList(
-				heading = "Favourites",
+				heading = "Favorites",
 				locations = uiState.locations,
 				onNavigateToDetails = onNavigateToDetails
 			)
@@ -217,8 +237,6 @@ fun GPSSearchView(
 	}
 }
 
-
-
 @Composable
 fun LocationList(
 	heading: String,
@@ -292,6 +310,34 @@ fun LocationDetails(location: Location) {
 		modifier = Modifier
 			.padding(12.dp)
 	) {
+		if (location.category == LocationCategory.PEARL){
+			Image(painter = painterResource(id = R.drawable.pearl),
+				contentDescription = "A person, alone in a idyllic location",
+				modifier = Modifier
+					.fillMaxWidth()
+					.clip(shape = RoundedCornerShape(5.dp))
+					.padding(5.dp)
+					.clip(RoundedCornerShape(5.dp))
+					.background(
+						MaterialTheme.colorScheme.primary,
+						shape = RoundedCornerShape(5.dp)
+					)
+			)
+		} else {
+			Image(painter = painterResource(id = R.drawable.trap),
+				contentDescription = "Lots of tourists at a waterfall",
+				modifier = Modifier
+					.fillMaxWidth()
+					.clip(shape = RoundedCornerShape(5.dp))
+					.padding(5.dp)
+					.clip(RoundedCornerShape(5.dp))
+					.background(
+						MaterialTheme.colorScheme.primary,
+						shape = RoundedCornerShape(5.dp)
+					)
+			)
+		}
+
 		Text(
 			text = location.name,
 			fontWeight = FontWeight.Bold,
@@ -299,7 +345,8 @@ fun LocationDetails(location: Location) {
 		)
 		Text(text = location.category.toString())
 		Text(text = location.description)
-		Text(text = Json.encodeToString(location))
+		//Text(text = Json.encodeToString(location))
+		//Text(text = "Monthly Visitors: " + location.statistics[0].toString())
 
 		val isFavorite = remember { mutableStateOf(false) }
 
@@ -315,7 +362,8 @@ fun LocationDetails(location: Location) {
 				}
 			})
 			{
-				Text(text = "Un-Favorite")
+				//Text(text = "Un-Favorite")
+				Icon(Icons.Filled.Favorite, contentDescription = "Favorited")
 			}
 		} else {
 			Button(onClick = {
@@ -325,7 +373,8 @@ fun LocationDetails(location: Location) {
 				}
 			})
 			{
-				Text(text = "Favorite")
+				//Text(text = "Favorite")
+				Icon(Icons.Filled.FavoriteBorder, contentDescription = "Not Favorited")
 			}
 		}
 	}

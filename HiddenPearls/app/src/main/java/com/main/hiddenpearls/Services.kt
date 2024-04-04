@@ -17,6 +17,7 @@ import io.ktor.http.path
 import io.ktor.serialization.kotlinx.json.json
 import android.location.Location as GPSLocation
 
+// service that fetches locations from the back-end api
 object LocationService {
 	val client: HttpClient = HttpClient(){
 		install(ContentNegotiation) {
@@ -69,6 +70,7 @@ object LocationService {
 	}
 }
 
+// service to take care of storing and accessing favorites locations persistently
 object FavoritesService {
 	private lateinit var favoritesDataStore: FavoritesDataStore
 
