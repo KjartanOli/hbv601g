@@ -52,7 +52,7 @@ sealed interface GPSState {
 	data class Error(val error: String? = null) : GPSState
 }
 
-class HomeViewModel() : ViewModel() {
+class HomeViewModel : ViewModel() {
 	var uiState: HomeUIState by mutableStateOf(HomeUIState.Loading)
 	private set
 
@@ -73,7 +73,7 @@ class HomeViewModel() : ViewModel() {
 	}
 }
 
-class ListViewModel() : ViewModel() {
+class ListViewModel : ViewModel() {
 	var uiState: ListUIState by mutableStateOf(ListUIState.Loading)
 	private set
 
@@ -93,7 +93,7 @@ class ListViewModel() : ViewModel() {
 	}
 }
 
-class FavoritesViewModel() : ViewModel() {
+class FavoritesViewModel : ViewModel() {
 	var uiState: ListUIState by mutableStateOf(ListUIState.Loading)
 	private set
 
@@ -170,7 +170,7 @@ class NameSearchViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 	}
 }
 
-class RandomViewModel() : ViewModel() {
+class RandomViewModel : ViewModel() {
 	var uiState: DetailsState by mutableStateOf(DetailsState.Loading)
 	private set
 

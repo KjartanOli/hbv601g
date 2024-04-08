@@ -289,7 +289,6 @@ fun NavBar(navController: NavHostController) {
 	}
 }
 
-
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LocationPermissionHandler(
@@ -318,7 +317,6 @@ fun LocationPermissionHandler(
 			PermissionNeededDialog(locationCheck)
 		}
 	}
-
 }
 
 @Composable
@@ -390,7 +388,6 @@ private fun PermissionNeededDialog(
 	)
 }
 
-
 // Gives you a random pearl when you shake the phone on the home screen of the app
 @Composable
 fun ShakeForPearl(navController: NavHostController) {
@@ -413,7 +410,6 @@ fun ShakeForPearl(navController: NavHostController) {
 				if (gyroChange > threshold) {
 					navController.navigate(Screen.Random.route)
 				}
-
 			}
 
 			override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {

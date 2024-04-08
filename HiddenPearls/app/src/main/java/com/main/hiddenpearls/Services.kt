@@ -1,6 +1,7 @@
 package com.main.hiddenpearls
 
 import android.content.Context
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.cache.HttpCache
@@ -19,7 +20,7 @@ import android.location.Location as GPSLocation
 
 // service that fetches locations from the back-end api
 object LocationService {
-	val client: HttpClient = HttpClient(){
+	val client: HttpClient = HttpClient {
 		install(ContentNegotiation) {
 			json()
 		}
@@ -36,7 +37,7 @@ object LocationService {
 		}
 		install(Logging) {
 			logger = Logger.DEFAULT
-			level = LogLevel.HEADERS
+			level = LogLevel.ALL
 			sanitizeHeader { header -> header == HttpHeaders.Authorization }
 		}
 	}
@@ -62,6 +63,7 @@ object LocationService {
 	}
 
 	suspend fun searchByLocation(location: GPSLocation, radius: Double): List<Location> {
+		Log.i("KÖTTUR","locations?longitude=${location.longitude}&latitude=${location.latitude}&radius=$radius")
 		return client.get("locations?longitude=${location.longitude}&latitude=${location.latitude}&radius=$radius").body()
 	}
 
@@ -94,5 +96,3 @@ object FavoritesService {
 		return favoritesDataStore.getAllFavoriteIds().contains(id)
 	}
 }
-
-

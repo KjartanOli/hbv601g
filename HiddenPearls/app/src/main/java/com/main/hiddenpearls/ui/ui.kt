@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -299,6 +301,7 @@ fun LocationCard(
 			modifier = Modifier
 				.padding(horizontal = 10.dp, vertical = 3.dp)
 		)
+
 	}
 }
 
@@ -309,6 +312,7 @@ fun LocationDetails(location: Location) {
 	Column(
 		modifier = Modifier
 			.padding(12.dp)
+			.verticalScroll(rememberScrollState())
 	) {
 		if (location.category == LocationCategory.PEARL){
 			Image(painter = painterResource(id = R.drawable.pearl),
@@ -345,7 +349,6 @@ fun LocationDetails(location: Location) {
 		)
 		Text(text = location.category.toString())
 		Text(text = location.description)
-		//Text(text = Json.encodeToString(location))
 		//Text(text = "Monthly Visitors: " + location.statistics[0].toString())
 
 		val isFavorite = remember { mutableStateOf(false) }
@@ -377,6 +380,7 @@ fun LocationDetails(location: Location) {
 				Icon(Icons.Filled.FavoriteBorder, contentDescription = "Not Favorited")
 			}
 		}
+		Spacer(modifier = Modifier.height(100.dp))
 	}
 }
 

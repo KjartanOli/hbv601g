@@ -57,7 +57,4 @@ class FavoritesDataStore(context: Context) {
 		val idsSet = favoriteIdsFlow.first()
 		return idsSet.map { it.toLong() }
 	}
-
-
-
 }
