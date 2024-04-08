@@ -1,5 +1,6 @@
 package com.main.hiddenpearls
 
+import android.Manifest
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -30,8 +31,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,6 +46,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.main.hiddenpearls.ui.DetailsView
 import com.main.hiddenpearls.ui.FavoritesView
 import com.main.hiddenpearls.ui.GPSSearchView
@@ -85,6 +90,7 @@ fun AppNavHost(
 				HomeView(
 					onNavigateToDetails = onNavigateToDetails,
 					navController = navController,
+					modifier = Modifier.padding(innerPadding)
 				)
 			}
 
@@ -93,7 +99,8 @@ fun AppNavHost(
 		composable(Screen.LocationList.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				ListView(
-					onNavigateToDetails = onNavigateToDetails
+					onNavigateToDetails = onNavigateToDetails,
+					modifier = Modifier.padding(innerPadding)
 				)
 			}
 		}
@@ -144,10 +151,13 @@ fun AppNavHost(
 		composable("${Screen.GPSSearch.route}/{radius}",
 			arguments = listOf(navArgument("radius") { type = NavType.FloatType })
 		) {
+			backStackEntry ->
+			val radius = backStackEntry.arguments?.getFloat("radius")?.toDouble() ?: 0.0
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				GPSSearchView(
 					modifier = modifier.padding(innerPadding),
-					onNavigateToDetails = onNavigateToDetails
+					onNavigateToDetails = onNavigateToDetails,
+					radius = radius
 				)
 			}
 		}
@@ -157,7 +167,7 @@ fun AppNavHost(
 @Composable
 fun NavBar(navController: NavHostController) {
 	val showNameSearchDialog = remember { mutableStateOf(false) }
-	val showGPSSearchDialog = remember { mutableStateOf(false) }
+	val locationCheck = remember { mutableStateOf(false) }
 
 	BottomAppBar(
 		actions = {
@@ -181,7 +191,7 @@ fun NavBar(navController: NavHostController) {
 					)
 				}
 				// Geo Search
-				IconButton(onClick = { showGPSSearchDialog.value = true },
+				IconButton(onClick = { locationCheck.value = true },
 					modifier = Modifier
 						.fillMaxSize()
 						.weight(1f)) {
@@ -271,43 +281,115 @@ fun NavBar(navController: NavHostController) {
 		)
 	}
 	// Dialog for GPSSearch
-	if (showGPSSearchDialog.value) {
-		var radius by remember { mutableFloatStateOf(0f) }
-
-		AlertDialog(
-			onDismissRequest = { showGPSSearchDialog.value = false },
-			title = { Text("Radius Search") },
-			text = {
-				// State for the text field
-
-				Column {
-					Text(text = "Search radius: ${radius.toInt()} km",
-						modifier = Modifier
-						.padding(5.dp))
-					Slider(
-						value = radius,
-						onValueChange = { radius = it },
-						valueRange = 0f..100f
-					)
-				}
-			},
-			dismissButton = {
-				Button(onClick = { showGPSSearchDialog.value = false }) {
-					Text("Cancel")
-				}
-			},
-			confirmButton = {
-				Button(onClick = {
-					showGPSSearchDialog.value = false
-					navController.navigate("${Screen.GPSSearch.route}/$radius")
-					// use search results here, stored in 'dist'
-				}) {
-					Text("Search")
-				}
-			}
+	if (locationCheck.value) {
+		LocationPermissionHandler(
+			locationCheck = locationCheck,
+			navController = navController
 		)
 	}
 }
+
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun LocationPermissionHandler(
+	locationCheck: MutableState<Boolean>,
+	navController: NavHostController
+) {
+	val locationPermissionState = rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
+
+	if (locationPermissionState.status.isGranted) {
+		GPSSearchDialog(
+			locationCheck,
+			locationPermissionState,
+			navController
+		)
+	} else {
+		LaunchedEffect(locationCheck.value) {
+			locationPermissionState.launchPermissionRequest()
+		}
+		if (locationPermissionState.status.isGranted) {
+			GPSSearchDialog(
+				locationCheck,
+				locationPermissionState,
+				navController
+			)
+		} else {
+			PermissionNeededDialog(locationCheck)
+		}
+	}
+
+}
+
+@Composable
+@OptIn(ExperimentalPermissionsApi::class)
+private fun GPSSearchDialog(
+	locationCheck: MutableState<Boolean>,
+	locationPermissionState: PermissionState,
+	navController: NavHostController,
+) {
+	var radius by remember { mutableStateOf(0f) }
+
+	AlertDialog(
+		onDismissRequest = {
+			locationCheck.value = false
+		},
+		title = { Text("Radius Search") },
+		text = {
+			Column {
+				Text(
+					text = "Search radius: ${radius.toInt()} km",
+					modifier = Modifier.padding(5.dp)
+				)
+				Slider(
+					value = radius,
+					onValueChange = { radius = it },
+					valueRange = 0f..100f
+				)
+			}
+		},
+		dismissButton = {
+			Button(onClick = {
+				locationCheck.value = false
+			}) {
+				Text("Cancel")
+			}
+		},
+		confirmButton = {
+			Button(onClick = {
+				if (locationPermissionState.status.isGranted) {
+					locationCheck.value = false
+					navController.navigate("${Screen.GPSSearch.route}/$radius")
+				} else {
+					// Inform the user that the permission is needed
+				}
+			}) {
+				Text("Search")
+			}
+		}
+	)
+}
+
+@Composable
+private fun PermissionNeededDialog(
+	locationCheck: MutableState<Boolean>
+) {
+	AlertDialog(
+		onDismissRequest = {
+			locationCheck.value = false
+		},
+		title = { Text("Permission Needed") },
+		text = { Text("Location permission is needed to use GPS Search. Please enable it in your device settings.") },
+		confirmButton = {
+			Button(onClick = {
+				locationCheck.value = false
+			}) {
+				Text("OK")
+			}
+		}
+	)
+}
+
 
 // Gives you a random pearl when you shake the phone on the home screen of the app
 @Composable

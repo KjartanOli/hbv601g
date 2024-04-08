@@ -1,29 +1,25 @@
 package com.main.hiddenpearls.viewModels
 
-import android.location.Location as GPSLocation
-import android.content.pm.PackageManager
-import androidx.annotation.RequiresPermission
 import android.Manifest
 import android.app.Application
-import android.content.Context
+import android.content.pm.PackageManager
+import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.main.hiddenpearls.FavoritesService
 import com.main.hiddenpearls.Location
 import com.main.hiddenpearls.LocationCategory
 import com.main.hiddenpearls.LocationService
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 sealed interface HomeUIState {
 	data object Loading : HomeUIState
@@ -194,77 +190,80 @@ class RandomViewModel() : ViewModel() {
 	}
 }
 
+class GPSSearchViewModelFactory(
+	private val application: Application,
+	private val radius: Double
+) : ViewModelProvider.Factory {
+	override fun <T : ViewModel> create(modelClass: Class<T>): T {
+		if (modelClass.isAssignableFrom(GPSSearchViewModel::class.java)) {
+			return GPSSearchViewModel(application, radius) as T
+		}
+		throw IllegalArgumentException("Unknown ViewModel class")
+	}
+}
+
 class GPSSearchViewModel(
 	application: Application,
-	savedStateHandle: SavedStateHandle
-) : AndroidViewModel(application) {
-	private val radius = savedStateHandle.get<Double>("radius")
+	private val radius: Double
+) : ViewModel() {
 	var uiState: GPSState by mutableStateOf(GPSState.Loading)
 		private set
-	private val context = getApplication<Application>()
+	private val context: WeakReference<Application> = WeakReference(application)
 
-	private val locationClient = LocationServices.getFusedLocationProviderClient(context)
- 	//val locationClient = remember {
-        //LocationServices.getFusedLocationProviderClient(context)
-     //}
+	private val locationClient: FusedLocationProviderClient by lazy {
+		LocationServices.getFusedLocationProviderClient(context.get()!!)
+	}
+	private var permission = false
 
  	init {
-		if (hasLocationPermission()) {
-			 if (ActivityCompat.checkSelfPermission(
-					 context,
+		 if (context.get()?.let {
+				 ActivityCompat.checkSelfPermission(
+					 it,
 					 Manifest.permission.ACCESS_FINE_LOCATION
-				 ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-					 context,
+				 )
+			 } == PackageManager.PERMISSION_GRANTED && context.get()?.let {
+				 ActivityCompat.checkSelfPermission(
+					 it,
 					 Manifest.permission.ACCESS_COARSE_LOCATION
-				 ) != PackageManager.PERMISSION_GRANTED
-			 ) {
-				 // TODO: Consider calling
-				 //    ActivityCompat#requestPermissions
-				 // here to request the missing permissions, and then overriding
-				 //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-				 //                                          int[] grantResults)
-				 // to handle the case where the user grants the permission. See the documentation
-				 // for ActivityCompat#requestPermissions for more details.
-				 getData()
-			 }
+				 )
+			 } == PackageManager.PERMISSION_GRANTED
+		 ) {
+			 permission = true
+			 getData()
 		 }
-	}
+	 }
 
- 	@RequiresPermission(
- 		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
- 	)
- 	private fun getData() {
+
+	@RequiresPermission(
+		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
+	)
+	private fun getData() {
 		if (radius == null) {
-			uiState = GPSState.Error()
-			return;
+			uiState = GPSState.Error("Radius not set")
+			return
 		}
-		if (hasLocationPermission()) {
-			locationClient.lastLocation.addOnSuccessListener { location: GPSLocation? ->
-				if (location == null) {
-					uiState = GPSState.Error("Failed to get your current location")
-				} else {
+
+		if (permission) {
+			locationClient.lastLocation.addOnSuccessListener { location: android.location.Location? ->
+				if (location != null) {
 					viewModelScope.launch {
 						uiState = try {
 							val locations = LocationService.searchByLocation(location, radius)
 							GPSState.Success(locations)
 						} catch (e: Exception) {
-							GPSState.Error(e.message)
+							GPSState.Error(e.message ?: "Unknown error")
 						}
 					}
+				} else {
+					uiState = GPSState.Error("Failed to get your current location")
 				}
+			}.addOnFailureListener { exception ->
+				// Handle the failure here
+				uiState = GPSState.Error(exception.message ?: "Unknown error")
 			}
 		} else {
 			uiState = GPSState.Error("Location permission not granted")
- 		}
- 	}
+		}
 
-	private fun hasLocationPermission(): Boolean {
-		return ContextCompat.checkSelfPermission(
-			context,
-			Manifest.permission.ACCESS_FINE_LOCATION
-		) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-			context,
-			Manifest.permission.ACCESS_COARSE_LOCATION
-		) == PackageManager.PERMISSION_GRANTED
 	}
 }
