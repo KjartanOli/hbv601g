@@ -227,7 +227,7 @@ fun GPSSearchView(
 		is GPSState.Success -> Column(
 			modifier = Modifier
 				.padding(12.dp)
-			/* .verticalScroll(rememberScrollState()) */
+				.verticalScroll(rememberScrollState())
 		) {
 			LocationList(
 				heading = "Search Results",
@@ -301,7 +301,6 @@ fun LocationCard(
 			modifier = Modifier
 				.padding(horizontal = 10.dp, vertical = 3.dp)
 		)
-
 	}
 }
 
@@ -349,7 +348,7 @@ fun LocationDetails(location: Location) {
 		)
 		Text(text = location.category.toString())
 		Text(text = location.description)
-		//Text(text = "Monthly Visitors: " + location.statistics[0].toString())
+		//Text(text = "Monthly Visitors: " + location.statistics.toString())
 
 		val isFavorite = remember { mutableStateOf(false) }
 

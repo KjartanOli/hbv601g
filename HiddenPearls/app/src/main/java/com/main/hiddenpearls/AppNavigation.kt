@@ -355,12 +355,8 @@ private fun GPSSearchDialog(
 		},
 		confirmButton = {
 			Button(onClick = {
-				if (locationPermissionState.status.isGranted) {
 					locationCheck.value = false
 					navController.navigate("${Screen.GPSSearch.route}/$radius")
-				} else {
-					// Inform the user that the permission is needed
-				}
 			}) {
 				Text("Search")
 			}
