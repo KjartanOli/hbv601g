@@ -105,7 +105,7 @@ class FavoritesViewModel : ViewModel() {
 		viewModelScope.launch {
 			uiState = try {
 				val favorites = FavoritesService.getFavorites()
-				if (favorites.size == 0) {
+				if (favorites.isEmpty()) {
 					ListUIState.Success(listOf())
 				} else {
 					val locations = LocationService.getLocations(favorites)

@@ -63,7 +63,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeView(
-	modifier: Modifier = Modifier,
 	onNavigateToDetails: (id: Long) -> Unit,
 	viewModel: HomeViewModel = viewModel(),
 	navController: NavHostController,
@@ -122,7 +121,6 @@ fun HomeView(
 
 @Composable
 fun ListView(
-	modifier: Modifier = Modifier,
 	viewModel: ListViewModel = viewModel(),
 	onNavigateToDetails: (id: Long) -> Unit,
 ) {
@@ -145,7 +143,6 @@ fun ListView(
 
 @Composable
 fun FavoritesView(
-	modifier: Modifier = Modifier,
 	onNavigateToDetails: (id: Long) -> Unit,
 	viewModel: FavoritesViewModel = viewModel()
 ) {
@@ -167,7 +164,6 @@ fun FavoritesView(
 
 @Composable
 fun DetailsView(
-	modifier: Modifier = Modifier,
 	viewModel: DetailsViewModel = viewModel(),
 ) {
 	when (val uiState = viewModel.uiState) {
@@ -179,7 +175,6 @@ fun DetailsView(
 
 @Composable
 fun RandomView(
-	modifier: Modifier = Modifier,
 	viewModel: RandomViewModel = viewModel(),
 ) {
 	when (val uiState = viewModel.uiState) {
@@ -191,7 +186,6 @@ fun RandomView(
 
 @Composable
 fun NameSearchView(
-	modifier: Modifier = Modifier,
 	onNavigateToDetails: (id: Long) -> Unit,
 	viewModel: NameSearchViewModel = viewModel(),
 ) {
@@ -213,7 +207,6 @@ fun NameSearchView(
 
 @Composable
 fun GPSSearchView(
-	modifier: Modifier = Modifier,
 	onNavigateToDetails: (id: Long) -> Unit,
 	radius: Double
 ) {

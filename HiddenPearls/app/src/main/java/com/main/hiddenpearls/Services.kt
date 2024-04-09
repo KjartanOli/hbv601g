@@ -20,7 +20,7 @@ import android.location.Location as GPSLocation
 
 // service that fetches locations from the back-end api
 object LocationService {
-	val client: HttpClient = HttpClient {
+	private val client: HttpClient = HttpClient {
 		install(ContentNegotiation) {
 			json()
 		}
