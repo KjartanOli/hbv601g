@@ -46,8 +46,8 @@ object LocationService {
 	}
 
 	suspend fun getLocations(ids: List<Long>): List<Location> {
-		val ids = ids.joinToString(separator=",")
-		return client.get("locations?ids=$ids").body()
+		val joinedIds = ids.joinToString(separator=",")
+		return client.get("locations?ids=$joinedIds").body()
 	}
 
 	suspend fun searchById(id: Long): Location {
