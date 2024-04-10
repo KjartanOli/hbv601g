@@ -48,6 +48,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.main.hiddenpearls.ui.DetailsView
@@ -89,7 +90,8 @@ fun AppNavHost(
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				HomeView(
 					onNavigateToDetails = onNavigateToDetails,
-					navController = navController
+					navController = navController,
+					modifier = Modifier.padding(innerPadding)
 				)
 			}
 
@@ -98,7 +100,8 @@ fun AppNavHost(
 		composable(Screen.LocationList.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				ListView(
-					onNavigateToDetails = onNavigateToDetails
+					onNavigateToDetails = onNavigateToDetails,
+					modifier = Modifier.padding(innerPadding)
 				)
 			}
 		}
@@ -106,6 +109,7 @@ fun AppNavHost(
 		composable(Screen.Favorites.route) {
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				FavoritesView(
+					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
 				)
 			}
@@ -119,7 +123,7 @@ fun AppNavHost(
 
 			if (id != null) {
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
-					DetailsView()
+					DetailsView(modifier = modifier.padding(innerPadding))
 				}
 			}
 		}
@@ -138,6 +142,7 @@ fun AppNavHost(
 
 				Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 					NameSearchView(
+						modifier = modifier.padding(innerPadding),
 						onNavigateToDetails = onNavigateToDetails
 					)
 				}
@@ -151,6 +156,7 @@ fun AppNavHost(
 			val radius = backStackEntry.arguments?.getFloat("radius")?.toDouble() ?: 0.0
 			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
 				GPSSearchView(
+					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails,
 					radius = radius
 				)
@@ -295,6 +301,7 @@ fun LocationPermissionHandler(
 	if (locationPermissionState.status.isGranted) {
 		GPSSearchDialog(
 			locationCheck,
+			locationPermissionState,
 			navController
 		)
 	} else {
@@ -304,6 +311,7 @@ fun LocationPermissionHandler(
 		if (locationPermissionState.status.isGranted) {
 			GPSSearchDialog(
 				locationCheck,
+				locationPermissionState,
 				navController
 			)
 		} else {
@@ -316,6 +324,7 @@ fun LocationPermissionHandler(
 @OptIn(ExperimentalPermissionsApi::class)
 private fun GPSSearchDialog(
 	locationCheck: MutableState<Boolean>,
+	locationPermissionState: PermissionState,
 	navController: NavHostController,
 ) {
 	var radius by remember { mutableFloatStateOf(0f) }
@@ -347,8 +356,12 @@ private fun GPSSearchDialog(
 		},
 		confirmButton = {
 			Button(onClick = {
+				if (locationPermissionState.status.isGranted) {
 					locationCheck.value = false
 					navController.navigate("${Screen.GPSSearch.route}/$radius")
+				} else {
+					// Inform the user that the permission is needed
+				}
 			}) {
 				Text("Search")
 			}

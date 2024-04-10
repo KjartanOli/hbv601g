@@ -15,23 +15,6 @@ enum class LocationCategory {
 }
 
 @Serializable
-@SerialName("YearMonth")
-private class YearMonthSurrogate(val year: Int, val month: Month)
-
-object YearMonthSerializer : KSerializer<YearMonth> {
-	override val descriptor: SerialDescriptor = YearMonthSurrogate.serializer().descriptor
-	override fun serialize(encoder: Encoder, value: YearMonth) {
-		val surrogate = YearMonthSurrogate(value.year, value.month)
-		encoder.encodeSerializableValue(YearMonthSurrogate.serializer(), surrogate)
-	}
-
-	override fun deserialize(decoder: Decoder): YearMonth {
-		val surrogate = decoder.decodeSerializableValue(YearMonthSurrogate.serializer())
-		return YearMonth.of(surrogate.year, surrogate.month)
-	}
-}
-
-@Serializable
 @SerialName("GPSLocation")
 private class GPSLocationSurrogate(
 	val longitude: Double,
@@ -59,13 +42,6 @@ object GPSLocationSerializer : KSerializer<GPSLocation> {
 }
 
 @Serializable
-data class VisitStatistic (
-	@Serializable(with=YearMonthSerializer::class)
-	val time: YearMonth,
-	val visitors: Int
-)
-
-@Serializable
 data class Location (
 	val id: Long,
 	val name: String,
@@ -74,5 +50,5 @@ data class Location (
 	@Serializable(with=GPSLocationSerializer::class)
 	@SerialName("loc")
 	val location: GPSLocation,
-	val statistics: List<VisitStatistic>
+	val monthlyVisits: Int
 )
