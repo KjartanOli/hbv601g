@@ -227,7 +227,7 @@ fun GPSSearchView(
 		is GPSState.Success -> Column(
 			modifier = Modifier
 				.padding(12.dp)
-				.verticalScroll(rememberScrollState())
+				//.verticalScroll(rememberScrollState())
 		) {
 			LocationList(
 				heading = "Search Results",
