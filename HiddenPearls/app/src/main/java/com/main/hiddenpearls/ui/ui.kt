@@ -287,13 +287,16 @@ fun LocationCard(
 			text = location.name,
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
-				.padding(horizontal = 10.dp, vertical = 3.dp)
+				.padding(horizontal = 10.dp, vertical = 3.dp),
+			fontSize = 20.sp,
+			fontWeight = FontWeight.Bold
 		)
 		Text(
 			text = location.category.toString(),
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
-				.padding(horizontal = 10.dp, vertical = 3.dp)
+				.padding(horizontal = 10.dp, vertical = 3.dp),
+			fontWeight = FontWeight.Bold
 		)
 		Text(
 			text = location.description,
@@ -344,11 +347,17 @@ fun LocationDetails(location: Location) {
 		Text(
 			text = location.name,
 			fontWeight = FontWeight.Bold,
-			fontSize = 24.sp
+			fontSize = 24.sp,
+			modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 0.dp)
 		)
 		Text(text = location.category.toString())
-		Text(text = location.description)
-		//Text(text = "Monthly Visitors: " + location.statistics.toString())
+		Text(
+			text = location.description,
+		)
+		Text(
+			text = "Monthly Visitors: " + location.monthlyVisits.toString(),
+			modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 10.dp)
+		)
 
 		val isFavorite = remember { mutableStateOf(false) }
 
