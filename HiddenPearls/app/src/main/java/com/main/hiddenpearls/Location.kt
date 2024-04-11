@@ -50,5 +50,5 @@ data class Location (
 	@Serializable(with=GPSLocationSerializer::class)
 	@SerialName("loc")
 	val location: GPSLocation,
-	val monthlyVisits: Int
+	val weeklyVisits: Int
 )
