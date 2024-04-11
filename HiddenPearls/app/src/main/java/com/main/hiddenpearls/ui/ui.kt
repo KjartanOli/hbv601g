@@ -355,7 +355,7 @@ fun LocationDetails(location: Location) {
 			text = location.description,
 		)
 		Text(
-			text = "Monthly Visitors: " + location.monthlyVisits.toString(),
+			text = "Weekly Visitors: " + location.weeklyVisits.toString(),
 			modifier = Modifier.padding(0.dp, 10.dp, 0.dp, 10.dp)
 		)
 

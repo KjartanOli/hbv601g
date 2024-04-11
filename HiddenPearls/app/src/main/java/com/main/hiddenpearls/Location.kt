@@ -6,8 +6,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import java.time.Month
-import java.time.YearMonth
 import android.location.Location as GPSLocation
 
 enum class LocationCategory {
@@ -50,5 +48,5 @@ data class Location (
 	@Serializable(with=GPSLocationSerializer::class)
 	@SerialName("loc")
 	val location: GPSLocation,
-	val monthlyVisits: Int
+	val weeklyVisits: Int
 )
