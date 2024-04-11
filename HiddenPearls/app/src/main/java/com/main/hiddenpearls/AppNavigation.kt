@@ -52,6 +52,7 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.main.hiddenpearls.ui.DetailsView
+import com.main.hiddenpearls.ui.RandomView
 import com.main.hiddenpearls.ui.FavoritesView
 import com.main.hiddenpearls.ui.GPSSearchView
 import com.main.hiddenpearls.ui.HomeView
@@ -111,6 +112,14 @@ fun AppNavHost(
 				FavoritesView(
 					modifier = modifier.padding(innerPadding),
 					onNavigateToDetails = onNavigateToDetails
+				)
+			}
+		}
+
+		composable(Screen.Random.route) {
+			Scaffold(bottomBar = { NavBar(navController) }) { innerPadding ->
+				RandomView(
+					modifier = modifier.padding(innerPadding),
 				)
 			}
 		}
