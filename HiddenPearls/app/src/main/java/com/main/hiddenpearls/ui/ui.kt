@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -301,6 +302,8 @@ fun LocationCard(
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
 				.padding(10.dp, 3.dp, 10.dp, 10.dp),
+			maxLines = 2,
+			overflow = TextOverflow.Ellipsis
 		)
 	}
 }
