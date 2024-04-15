@@ -246,8 +246,6 @@ fun LocationList(
 	onNavigateToDetails: (id: Long) -> Unit,
 ) {
 	Column(
-		modifier = Modifier
-			.padding(12.dp)
 	) {
 		Text(text = heading, fontWeight = FontWeight.Bold, fontSize = 24.sp)
 		Spacer(modifier = Modifier.height(12.dp))
