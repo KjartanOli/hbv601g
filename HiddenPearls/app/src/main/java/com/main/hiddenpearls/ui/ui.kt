@@ -91,7 +91,7 @@ fun HomeView(
 					Text(text = "HIDDEN PEARLS", fontWeight = FontWeight.Bold, fontSize = 32.sp)
 				}
 				item {
-					Spacer(modifier = Modifier.height(12.dp))
+					Spacer(modifier = Modifier.height(6.dp))
 				}
 				item {
 					Text(text = "Top Pearls", fontWeight = FontWeight.Bold, fontSize = 24.sp)
@@ -287,7 +287,7 @@ fun LocationCard(
 			text = location.name,
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
-				.padding(horizontal = 10.dp, vertical = 3.dp),
+				.padding(10.dp, 10.dp, 10.dp, 3.dp),
 			fontSize = 20.sp,
 			fontWeight = FontWeight.Bold
 		)
@@ -295,14 +295,14 @@ fun LocationCard(
 			text = location.category.toString(),
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
-				.padding(horizontal = 10.dp, vertical = 3.dp),
+				.padding(10.dp, 3.dp, 10.dp, 3.dp),
 			fontWeight = FontWeight.Bold
 		)
 		Text(
 			text = location.description,
 			color = MaterialTheme.colorScheme.onPrimary,
 			modifier = Modifier
-				.padding(horizontal = 10.dp, vertical = 3.dp)
+				.padding(10.dp, 3.dp, 10.dp, 10.dp),
 		)
 	}
 }
