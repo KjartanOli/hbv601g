@@ -228,7 +228,6 @@ fun GPSSearchView(
 		is GPSState.Success -> Column(
 			modifier = Modifier
 				.padding(12.dp)
-				//.verticalScroll(rememberScrollState())
 		) {
 			LocationList(
 				heading = "Search Results",
@@ -246,8 +245,7 @@ fun LocationList(
 	locations: List<Location>,
 	onNavigateToDetails: (id: Long) -> Unit,
 ) {
-	Column(
-	) {
+	Column{
 		Text(text = heading, fontWeight = FontWeight.Bold, fontSize = 24.sp)
 		Spacer(modifier = Modifier.height(12.dp))
 		LazyColumn {
@@ -374,7 +372,6 @@ fun LocationDetails(location: Location) {
 				}
 			})
 			{
-				//Text(text = "Un-Favorite")
 				Icon(Icons.Filled.Favorite, contentDescription = "Favorited")
 			}
 		} else {
@@ -385,7 +382,6 @@ fun LocationDetails(location: Location) {
 				}
 			})
 			{
-				//Text(text = "Favorite")
 				Icon(Icons.Filled.FavoriteBorder, contentDescription = "Not Favorited")
 			}
 		}

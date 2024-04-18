@@ -39,25 +39,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.main.hiddenpearls.ui.DetailsView
-import com.main.hiddenpearls.ui.RandomView
 import com.main.hiddenpearls.ui.FavoritesView
 import com.main.hiddenpearls.ui.GPSSearchView
 import com.main.hiddenpearls.ui.HomeView
 import com.main.hiddenpearls.ui.ListView
 import com.main.hiddenpearls.ui.NameSearchView
+import com.main.hiddenpearls.ui.RandomView
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -95,7 +93,6 @@ fun AppNavHost(
 					modifier = Modifier.padding(innerPadding)
 				)
 			}
-
 		}
 
 		composable(Screen.LocationList.route) {
@@ -290,6 +287,7 @@ fun NavBar(navController: NavHostController) {
 			}
 		)
 	}
+
 	// Dialog for GPSSearch
 	if (locationCheck.value) {
 		LocationPermissionHandler(
@@ -368,8 +366,6 @@ private fun GPSSearchDialog(
 				if (locationPermissionState.status.isGranted) {
 					locationCheck.value = false
 					navController.navigate("${Screen.GPSSearch.route}/$radius")
-				} else {
-					// Inform the user that the permission is needed
 				}
 			}) {
 				Text("Search")
@@ -416,7 +412,6 @@ fun ShakeForPearl(navController: NavHostController) {
 
 				val threshold = 6.0f
 				// Get a random location
-				// might offload picking random location to api
 				if (gyroChange > threshold) {
 					navController.navigate(Screen.Random.route)
 				}
@@ -436,11 +431,4 @@ fun ShakeForPearl(navController: NavHostController) {
 			sensorManager.unregisterListener(sensorEventListener)
 		}
 	}
-}
-
-// previews below
-@Preview
-@Composable
-fun NavBarPreview() {
-	NavBar(rememberNavController())
 }

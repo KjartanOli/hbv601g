@@ -27,9 +27,6 @@ object LocationService {
 		install(HttpCache)
 		defaultRequest {
 			url {
-				/* protocol = URLProtocol.HTTP */
-				/* host = "localhost" */
-				/* port = 9090 */
 				protocol = URLProtocol.HTTPS
 				host = "hidden-pearls.onrender.com"
 				path("api/")

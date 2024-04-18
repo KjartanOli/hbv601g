@@ -238,6 +238,7 @@ class GPSSearchViewModel(
 		anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
 	)
 	private fun getData() {
+		// radius should never be null, but we check it just in case
 		if (radius == null) {
 			uiState = GPSState.Error("Radius not set")
 			return
@@ -258,12 +259,10 @@ class GPSSearchViewModel(
 					uiState = GPSState.Error("Failed to get your current location")
 				}
 			}.addOnFailureListener { exception ->
-				// Handle the failure here
 				uiState = GPSState.Error(exception.message ?: "Unknown error")
 			}
 		} else {
 			uiState = GPSState.Error("Location permission not granted")
 		}
-
 	}
 }
