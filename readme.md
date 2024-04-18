@@ -19,9 +19,9 @@ places that appeal to you and read up on them, while seeing how many average wee
 ## Execution
 
 To compile and run on connected Android device, run the following commands:
-`cd HiddenPearls`
-`./gradlew build`
-`adb install app/build/outputs/apk/debug/app-debug.apk`
+- `cd HiddenPearls`
+- `./gradlew build`
+- `adb install app/build/outputs/apk/debug/app-debug.apk`
 
 To run the project in Android Studio:
 - Open the Hidden Pearls folder in Android Studio
